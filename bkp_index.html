@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SES-Tool Links — Hub</title>
+    <style>
+        /* Reset & base */
+        :root {
+            --bg: #0f1724;
+            /* deep navy */
+            --card: #0b1220;
+            --muted: #9aa4b2;
+            --accent: #0ea5a4;
+            /* teal */
+            --accent-2: #60a5fa;
+            /* blue */
+            --glass: rgba(255, 255, 255, 0.03);
+            --white: #e6eef8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(180deg, #071226 0%, #081826 100%);
+            color: var(--white);
+        }
+
+        a {
+            color: inherit
+        }
+
+        .app {
+            display: grid;
+            grid-template-rows: 56px 1fr;
+            height: 100vh;
+        }
+
+        /* Top bar */
+        header.topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(6px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: var(--shadow)
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: 700
+        }
+
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        /* Toggle */
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            background: var(--glass);
+            padding: 6px;
+            border-radius: 8px;
+            gap: 6px
+        }
+
+        .mode-toggle button {
+            background: transparent;
+            border: 0;
+            color: var(--muted);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer
+        }
+
+        .mode-toggle button.active {
+            background: linear-gradient(90deg, rgba(14, 165, 164, 0.14), rgba(96, 165, 250, 0.07));
+            color: var(--white);
+        }
+
+        /* Layout */
+        .workspace {
+            display: grid;
+            grid-template-columns: 260px 1fr 480px;
+            gap: 12px;
+            padding: 14px;
+            align-items: stretch
+        }
+
+        /* sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 0
+        }
+
+        .sidebar.hidden {
+            display: none
+        }
+
+        .sidebar .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .hamburger {
+            background: transparent;
+            border: 0;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px
+        }
+
+        .pin-btn {
+            background: transparent;
+            border: 0;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px
+        }
+
+        .search {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .search input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 8px;
+            border-radius: 8px;
+            color: var(--white);
+            outline: none
+        }
+
+        .tools-list {
+            overflow: auto;
+            padding: 6px 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .tool-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer
+        }
+
+        .tool-item .left {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .tool-item .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700
+        }
+
+        .tool-item .meta {
+            display: flex;
+            flex-direction: column
+        }
+
+        .tool-item .name {
+            font-weight: 600
+        }
+
+        .tool-item small {
+            color: var(--muted)
+        }
+
+        .tool-item:hover {
+            background: rgba(255, 255, 255, 0.02)
+        }
+
+        .tool-item.active {
+            background: linear-gradient(90deg, rgba(14, 165, 164, 0.12), rgba(96, 165, 250, 0.06));
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02)
+        }
+
+        .open-new {
+            background: transparent;
+            border: 0;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px
+        }
+
+        /* center doc pane */
+        .center {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .center .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .center h2 {
+            margin: 0;
+            font-size: 18px
+        }
+
+        .doc-content {
+            overflow: auto;
+            padding-right: 8px
+        }
+
+        .doc-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted)
+        }
+
+        /* right iframe pane */
+        .pane-right {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01));
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0
+        }
+
+        .pane-right .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: space-between;
+            padding: 8px
+        }
+
+        .iframe-wrap {
+            flex: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #061016;
+            position: relative
+        }
+
+        iframe.tool-frame {
+            width: 100%;
+            height: 100%;
+            border: 0
+        }
+
+        .iframe-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--muted);
+            padding: 20px
+        }
+
+        /* Responsive */
+        @media (max-width:1100px) {
+            .workspace {
+                grid-template-columns: 220px 1fr;
+                grid-template-areas: 'sidebar center' 'sidebar right';
+            }
+
+            .pane-right {
+                grid-column: 1/span 2;
+                height: 320px
+            }
+        }
+
+        @media (max-width:720px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none
+            }
+
+            .pane-right {
+                order: 3
+            }
+        }
+
+        /* simple spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            border-top-color: var(--accent);
+            animation: spin 1s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        /* small helpers */
+        .muted {
+            color: var(--muted)
+        }
+
+        .btn {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 0;
+            color: #022;
+            cursor: pointer
+        }
+
+        .small {
+            font-size: 12px
+        }
+
+        .notice {
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--muted)
+        }
+
+        /* doc html content styling */
+        .doc-content h1 {
+            font-size: 20px
+        }
+
+        .doc-content h2 {
+            font-size: 18px
+        }
+
+        .doc-content p {
+            line-height: 1.5;
+            color: var(--white);
+        }
+
+        .doc-content code {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 4px;
+            font-family: monospace
+        }
+
+        .doc-content pre {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px;
+            border-radius: 6px;
+            overflow: auto
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <header class="topbar">
+            <div class="brand">
+                <div class="logo">SES</div>
+                <div>
+                    <div class="title">SES-Tool Links</div>
+                    <div class="muted small">Central hub for tools & documentation</div>
+                </div>
+            </div>
+
+            <div class="top-controls">
+                <div class="mode-toggle" role="tablist" aria-label="Mode toggle">
+                    <button id="mode-tools" class="active" title="Show Tools">Tools</button>
+                    <button id="mode-docs" title="Show Documentation">Documentation</button>
+                </div>
+                <div style="width:8px"></div>
+                <button id="hamb-global" class="hamburger" title="Toggle sidebar">☰</button>
+            </div>
+        </header>
+
+        <main class="workspace" id="workspace">
+            <aside class="sidebar" id="sidebar">
+                <div class="top">
+                    <div class="search" style="flex:1">
+                        <input id="search" placeholder="Search tools..." />
+                    </div>
+                    <div style="display:flex;gap:6px;margin-left:8px">
+                        <button id="pin-sidebar" class="pin-btn" title="Pin sidebar">📌</button>
+                    </div>
+                </div>
+
+                <div class="tools-list" id="toolsList" tabindex="0">
+                    <!-- populated by JS -->
+                </div>
+
+                <div class="muted small" style="text-align:center;padding:10px">Use the search to quickly filter tools.
+                    Click a tool to load its docs & UI.</div>
+            </aside>
+
+            <section class="center" id="center">
+                <div class="header">
+                    <h2 id="center-title">SES-Tool Links</h2>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <div class="doc-loading" id="docStatus" style="display:none">
+                            <div class="spinner"></div>
+                            <div>Loading</div>
+                        </div>
+                        <button id="toggleIframe" class="btn small">Hide Tool</button>
+                    </div>
+                </div>
+                <div class="doc-content" id="docContent" style="flex:1;min-height:0;overflow:auto;padding-top:6px">
+                    <div class="notice">No tool selected. Select a tool from the left panel to view documentation and
+                        load the tool UI.</div>
+                </div>
+            </section>
+
+            <aside class="pane-right" id="paneRight">
+                <div class="controls">
+                    <div class="small muted">Tool Preview</div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <button id="openNewTab" class="open-new" title="Open tool in new tab">↗️ Open</button>
+                        <div id="embedNotice" class="muted small"></div>
+                    </div>
+                </div>
+                <div class="iframe-wrap" id="iframeWrap">
+                    <div class="iframe-placeholder" id="iframePlaceholder">No tool loaded.</div>
+                    <!-- iframe inserted here -->
+                </div>
+            </aside>
+
+        </main>
+    </div>
+
+    <script>
+        /*
+          SES Tools Hub - Single-file static app
+          - Loads ToolsList.csv from same directory
+          - Loads docs from Tool-Documentation/<filename>
+          - Supports .html, .md, .txt, .doc, .docx via appropriate rendering
+          - Embeds tool UI in iframe (if allowed) and provides open-in-new-tab
+          - Left panel: search, pin, hamburger
+          - Top toggle: Tools vs Documentation
+          - Saves last selected tool & sidebar pin state in localStorage
+        */
+
+        // --------------------- Configuration ---------------------
+        const CSV_PATH = 'ToolsList.csv'; // relative path
+        const DOCS_DIR = 'Tool-Documentation/';
+        const DEFAULT_DOC = 'Overview.html'; // shown in Documentation mode - create this file in Tool-Documentation/
+        const MAX_TOOLS = 500; // safety cap
+        // --------------------- State ---------------------
+        let tools = []; // parsed from CSV
+        let filteredTools = [];
+        let selectedToolIndex = null;
+        let iframeVisible = true;
+
+        // elements
+        const toolsListEl = document.getElementById('toolsList');
+        const searchEl = document.getElementById('search');
+        const centerTitleEl = document.getElementById('center-title');
+        const docContentEl = document.getElementById('docContent');
+        const docStatusEl = document.getElementById('docStatus');
+        const modeToolsBtn = document.getElementById('mode-tools');
+        const modeDocsBtn = document.getElementById('mode-docs');
+        const sidebarEl = document.getElementById('sidebar');
+        const pinBtn = document.getElementById('pin-sidebar');
+        const hamburgerGlobal = document.getElementById('hamb-global');
+        const toggleIframeBtn = document.getElementById('toggleIframe');
+        const iframeWrap = document.getElementById('iframeWrap');
+        const iframePlaceholder = document.getElementById('iframePlaceholder');
+        const openNewTabBtn = document.getElementById('openNewTab');
+        const embedNoticeEl = document.getElementById('embedNotice');
+
+        // --------------------- Helpers ---------------------
+        function $(s, ctx = document) { return ctx.querySelector(s) }
+        function $all(s, ctx = document) { return Array.from(ctx.querySelectorAll(s)) }
+        function saveState() {
+            localStorage.setItem('ses_tools_state', JSON.stringify({ selectedToolIndex, iframeVisible, sidebarPinned: sidebarEl.classList.contains('pinned'), mode: currentMode() }));
+        }
+        function loadState() {
+            try {
+                const st = JSON.parse(localStorage.getItem('ses_tools_state') || '{}');
+                if (typeof st.selectedToolIndex === 'number') { selectedToolIndex = st.selectedToolIndex }
+                if (typeof st.iframeVisible === 'boolean') { iframeVisible = st.iframeVisible }
+                if (st.sidebarPinned) { sidebarEl.classList.add('pinned') }
+                if (st.mode === 'docs') { setMode('docs') } else { setMode('tools') }
+            } catch (e) { console.warn('loadState err', e) }
+        }
+
+        function currentMode() { return modeDocsBtn.classList.contains('active') ? 'docs' : 'tools' }
+        function setMode(m) {
+            if (m === 'docs') { modeDocsBtn.classList.add('active'); modeToolsBtn.classList.remove('active'); }
+            else { modeToolsBtn.classList.add('active'); modeDocsBtn.classList.remove('active'); }
+            renderMode();
+            saveState();
+        }
+
+        // safe HTML escape
+        function escapeHtml(s) { return s.replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] }); }
+
+        // very small markdown -> html converter (covers headings, bold, italics, code blocks, inline code, links, lists)
+        function renderMarkdown(md) {
+            // escape first
+            let html = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // code blocks ```
+            html = html.replace(/```([\s\S]*?)```/g, function (_, code) { return '<pre><code>' + escapeHtml(code) + '</code></pre>' });
+            // headings
+            html = html.replace(/^###### (.*$)/gim, '<h6>$1</h6>');
+            html = html.replace(/^##### (.*$)/gim, '<h5>$1</h5>');
+            html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            // bold & italics
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            // inline code
+            html = html.replace(/`([^`]+)`/g, function (_, c) { return '<code>' + escapeHtml(c) + '</code>' });
+            // links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+            // unordered lists
+            html = html.replace(/(^|\n)\s*[-\*] (.+)/g, function (_, b, item) { return (b ? b : '') + '<li>' + item + '</li>' });
+            html = html.replace(/(<li>[\s\S]*?<\/li>)/g, function (m) { return '<ul>' + m.replace(/<li>/g, '<li>').replace(/\n/g, '') + '</ul>' });
+            // paragraphs
+            html = html.replace(/\n{2,}/g, '\n\n').split('\n').map(function (line) {
+                if (/^<h|^<ul|^<pre|^<li|^<\/ul|^<\/pre/.test(line) || line.trim() === '') return line;
+                return '<p>' + line + '</p>';
+            }).join('\n');
+            return html;
+        }
+
+        function buildToolCard(tool, idx) {
+            const div = document.createElement('div');
+            div.className = 'tool-item';
+            div.dataset.idx = idx;
+            const left = document.createElement('div'); left.className = 'left';
+            const icon = document.createElement('div'); icon.className = 'icon'; icon.textContent = tool.name.trim().split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
+            const meta = document.createElement('div'); meta.className = 'meta';
+            const name = document.createElement('div'); name.className = 'name'; name.textContent = tool.name;
+            const small = document.createElement('small'); small.textContent = tool.tagline || tool.url.replace(/^https?:\/\//, '');
+            meta.appendChild(name); meta.appendChild(small);
+            left.appendChild(icon); left.appendChild(meta);
+
+            const right = document.createElement('div');
+            const openBtn = document.createElement('button'); openBtn.className = 'open-new'; openBtn.title = 'Open in new tab'; openBtn.innerHTML = '↗️';
+            openBtn.addEventListener('click', (ev) => { ev.stopPropagation(); window.open(tool.url, '_blank'); });
+            right.appendChild(openBtn);
+
+            div.appendChild(left); div.appendChild(right);
+
+            div.addEventListener('click', () => {
+                selectTool(idx);
+            });
+            return div;
+        }
+
+        // --------------------- CSV Parsing ---------------------
+        async function fetchCSV() {
+            try {
+                const res = await fetch(CSV_PATH + '?_=' + Date.now());
+                if (!res.ok) throw new Error('Failed to fetch CSV');
+                let txt = await res.text();
+                // remove BOM
+                txt = txt.replace(/^\uFEFF/, '');
+                parseCSV(txt);
+            } catch (e) {
+                console.error('fetchCSV', e);
+                docContentEl.innerHTML = '<div class="notice">Failed to load ToolsList.csv. Make sure file exists next to index.html and is accessible.</div>';
+            }
+        }
+
+        function parseCSV(text) {
+            // simple CSV parser that handles quoted fields with commas
+            const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+            if (lines.length < 1) return;
+            const header = splitCSVLine(lines[0]);
+            const mapping = header.map(h => h.trim());
+            const rows = lines.slice(1).map(l => splitCSVLine(l)).slice(0, MAX_TOOLS);
+            tools = rows.map(cols => {
+                const obj = {};
+                mapping.forEach((k, i) => { obj[k] = (cols[i] || '').trim(); });
+                // standardize fields
+                return { seq: obj['SequenceNo.'] || obj['Sequence'] || obj['Seq'] || '', name: obj['LeftPanelToolName(Customised)'] || obj['LeftPanelToolName'] || obj['Name'] || 'Untitled', url: obj['ToolsURL'] || obj['URL'] || '', doc: obj['DocumentationFileNameStoredinWordInSameDirectory'] || obj['Doc'] || obj['Documentation'] || '', tagline: '' };
+            }).filter(t => t.name);
+            // sort by seq if numeric
+            tools.sort((a, b) => { const na = parseInt(a.seq) || 0, nb = parseInt(b.seq) || 0; return na - nb; });
+            filteredTools = tools.slice();
+            renderToolsList();
+            // auto-select last or first
+            const st = JSON.parse(localStorage.getItem('ses_tools_state') || '{}');
+            if (typeof st.selectedToolIndex === 'number' && st.selectedToolIndex < tools.length) { selectTool(st.selectedToolIndex); }
+        }
+
+        function splitCSVLine(line) {
+            const out = []; let cur = ''; let inQuotes = false;
+            for (let i = 0; i < line.length; i++) { const ch = line[i]; if (ch === '"') { if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; } else { inQuotes = !inQuotes; } } else if (ch === ',' && !inQuotes) { out.push(cur); cur = ''; } else { cur += ch; } }
+            out.push(cur); return out;
+        }
+
+        // --------------------- Render UI ---------------------
+        function renderToolsList() {
+            toolsListEl.innerHTML = '';
+            filteredTools.forEach((t, idx) => {
+                const item = buildToolCard(t, idx);
+                if (selectedToolIndex === idx) item.classList.add('active');
+                toolsListEl.appendChild(item);
+            });
+        }
+
+        function filterTools(q) {
+            const qq = q.trim().toLowerCase();
+            filteredTools = tools.filter(t => t.name.toLowerCase().includes(qq) || (t.tagline || '').toLowerCase().includes(qq));
+            renderToolsList();
+        }
+
+        // --------------------- Selection & Loading ---------------------
+        async function selectTool(idx) {
+            if (idx == null || idx < 0 || idx >= filteredTools.length) return;
+            // Map filtered index to tools array index
+            const tool = filteredTools[idx];
+            // find index in full tools array
+            const realIndex = tools.indexOf(tool);
+            selectedToolIndex = realIndex;
+            // highlight
+            $all('.tool-item').forEach(el => el.classList.toggle('active', el.dataset.idx == idx));
+
+            centerTitleEl.textContent = tool.name;
+            // update open new tab
+            openNewTabBtn.onclick = () => window.open(tool.url, '_blank');
+
+            // load doc
+            await loadDocFor(tool);
+            // load iframe if in Tools mode
+            if (currentMode() === 'tools') loadIframeFor(tool);
+            saveState();
+        }
+
+        async function loadDocFor(tool) {
+            docStatusEl.style.display = 'flex';
+            docContentEl.innerHTML = '';
+            try {
+                const filename = tool.doc || '';
+                if (!filename) { docContentEl.innerHTML = '<div class="notice">No documentation filename provided in CSV for this tool.</div>'; return; }
+                const ext = filename.split('.').pop().toLowerCase();
+                const url = DOCS_DIR + encodeURIComponent(filename);
+                if (ext === 'md' || ext === 'markdown') {
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('doc fetch failed');
+                    const txt = await res.text();
+                    docContentEl.innerHTML = renderMarkdown(txt);
+                } else if (ext === 'html' || ext === 'htm') {
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('doc fetch failed');
+                    const txt = await res.text();
+                    // inject sanitized-ish - minimal; because files come from same repo trust them
+                    docContentEl.innerHTML = txt;
+                } else if (ext === 'txt') {
+                    const res = await fetch(url);
+                    const txt = await res.text();
+                    docContentEl.innerHTML = '<pre>' + escapeHtml(txt) + '</pre>';
+                } else if (ext === 'doc' || ext === 'docx' || ext === 'pdf' || ext === 'ppt' || ext === 'pptx') {
+                    // Use Microsoft Office Online viewer which can embed doc/pdf if publicly accessible.
+                    const viewer = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(new URL(url, location.href).href);
+                    docContentEl.innerHTML = '<div style="height:600px"><iframe src="' + viewer + '" style="width:100%;height:100%;border:0" loading="lazy"></iframe></div>';
+                } else {
+                    // fallback - try to fetch and show
+                    const res = await fetch(url);
+                    if (res.ok) { const txt = await res.text(); docContentEl.innerHTML = '<pre>' + escapeHtml(txt) + '</pre>'; }
+                    else docContentEl.innerHTML = '<div class="notice">Unsupported doc type: ' + escapeHtml(ext) + '</div>';
+                }
+            } catch (e) {
+                console.error('loadDocFor', e);
+                docContentEl.innerHTML = '<div class="notice">Failed to load documentation. Make sure the file exists in ' + DOCS_DIR + ' and is accessible. Error: ' + escapeHtml(e.message || String(e)) + '</div>';
+            } finally { docStatusEl.style.display = 'none'; }
+        }
+
+        function clearIframe() {
+            const existing = document.getElementById('toolFrame');
+            if (existing) existing.remove();
+            iframePlaceholder.style.display = 'flex';
+            embedNoticeEl.textContent = '';
+        }
+
+        function loadIframeFor(tool) {
+            clearIframe();
+            if (!tool.url) { iframePlaceholder.textContent = 'No URL provided for this tool.'; return; }
+            iframePlaceholder.style.display = 'none';
+            const frame = document.createElement('iframe'); frame.id = 'toolFrame'; frame.className = 'tool-frame'; frame.src = tool.url; frame.loading = 'lazy';
+            // detect embed blocked by trying to access contentWindow on load
+            let loaded = false;
+            frame.addEventListener('load', () => {
+                try {
+                    // try same-origin access; will throw DOMException if cross-origin
+                    const cw = frame.contentWindow.document; // will throw if cross-origin
+                    // if succeeded, embedding allowed
+                    embedNoticeEl.textContent = '';
+                } catch (e) {
+                    // cross-origin - embedding may still succeed, but we can't access contentWindow; embedding allowed if no X-Frame-Options
+                    // There is no reliable way to detect X-Frame-Options blocked other than fetch HEAD - but that fails cross-origin. We'll try a timeout fallback.
+                    // If the frame's contentWindow exists but is inaccessible, we'll optimistically assume embedding succeeded. However if the browser blocks, the iframe will fire 'error' rarely.
+                    // Show a note that if the tool doesn't render, user can open in new tab.
+                    embedNoticeEl.textContent = 'If the tool does not appear, it might block embedding. Use "Open" to open in a new tab.';
+                }
+            });
+            // fallback if iframe stays blank (e.g., blocked) after 2.5s - show message
+            const checkTimeout = setTimeout(() => {
+                // if iframe still has no content and placeholder hidden, show message below
+                // We cannot reliably detect blocked state cross-origin; so display useful hint.
+                if (frame && frame.contentWindow) {
+                    // can't introspect; do nothing
+                }
+                if (iframeWrap && iframeWrap.innerText.trim() === '') {
+                    // nothing
+                }
+            }, 2500);
+            iframeWrap.appendChild(frame);
+        }
+
+        // --------------------- Mode rendering ---------------------
+        function renderMode() {
+            if (currentMode() === 'docs') {
+                // show docs-only: center shows DEFAULT_DOC; right pane hides iframe
+                toggleIframe(false);
+                loadDefaultDoc();
+            } else {
+                // tools mode: show list + selected tool's doc + iframe
+                if (selectedToolIndex == null && tools.length > 0) { selectTool(0); }
+                if (selectedToolIndex != null) { selectTool(selectedToolIndex); }
+                toggleIframe(iframeVisible);
+            }
+        }
+
+        async function loadDefaultDoc() {
+            docContentEl.innerHTML = '';
+            docStatusEl.style.display = 'flex';
+            try {
+                const url = DOCS_DIR + DEFAULT_DOC;
+                const ext = DEFAULT_DOC.split('.').pop().toLowerCase();
+                if (ext === 'html' || ext === 'htm') { const r = await fetch(url); docContentEl.innerHTML = await r.text(); }
+                else if (ext === 'md') { const r = await fetch(url); const t = await r.text(); docContentEl.innerHTML = renderMarkdown(t); }
+                else { const r = await fetch(url); const t = await r.text(); docContentEl.innerHTML = '<pre>' + escapeHtml(t) + '</pre>'; }
+            } catch (e) { docContentEl.innerHTML = '<div class="notice">Failed to load default documentation: ' + escapeHtml(String(e)) + '</div>'; }
+            finally { docStatusEl.style.display = 'none'; }
+        }
+
+        // --------------------- UI events ---------------------
+        searchEl.addEventListener('input', (e) => filterTools(e.target.value));
+        modeDocsBtn.addEventListener('click', () => setMode('docs'));
+        modeToolsBtn.addEventListener('click', () => setMode('tools'));
+
+        hamburgerGlobal.addEventListener('click', () => { sidebarEl.classList.toggle('hidden'); saveState(); });
+        pinBtn.addEventListener('click', () => { sidebarEl.classList.toggle('pinned'); if (sidebarEl.classList.contains('pinned')) sidebarEl.classList.remove('hidden'); saveState(); });
+
+        toggleIframeBtn.addEventListener('click', () => { toggleIframe(!iframeVisible); saveState(); });
+        function toggleIframe(show) {
+            iframeVisible = !!show; if (!iframeVisible) { // hide
+                iframeWrap.style.display = 'none'; toggleIframeBtn.textContent = 'Show Tool';
+            } else { iframeWrap.style.display = 'flex'; toggleIframeBtn.textContent = 'Hide Tool'; }
+        }
+
+        // keyboard nav: up/down to navigate tools list
+        toolsListEl.addEventListener('keydown', (e) => {
+            const visible = $all('.tool-item'); if (!visible.length) return;
+            const focused = document.activeElement;
+            if (e.key === 'ArrowDown') { e.preventDefault(); const next = focused.nextElementSibling || visible[0]; next.focus(); }
+            if (e.key === 'ArrowUp') { e.preventDefault(); const prev = focused.previousElementSibling || visible[visible.length - 1]; prev.focus(); }
+        });
+
+        // open new tab btn
+        openNewTabBtn.addEventListener('click', () => {
+            if (selectedToolIndex == null) return alert('No tool selected');
+            const tool = tools[selectedToolIndex]; window.open(tool.url, '_blank');
+        });
+
+        // responsiveness: if sidebar pinned saved, keep
+        window.addEventListener('resize', () => {/* noop for now */ });
+
+        // --------------------- Init ---------------------
+        loadState();
+        fetchCSV();
+        renderMode();
+
+        // small graceful fallback: if CSV fails, show default docs
+        setTimeout(() => { if (!tools.length) { if (currentMode() === 'docs') loadDefaultDoc(); } }, 1200);
+
+    </script>
+</body>
+
+</html>
