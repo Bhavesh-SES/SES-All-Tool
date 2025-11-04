@@ -1,12 +1,12 @@
 # Livestream API Details Puller — User Guide
 
-# 1\. Overview
+# 1. Overview
 
 **Livestream API Details Puller** fetches livestream metadata from configured outlets, shows it in a searchable table, helps you build preview/playback URLs across headends/protocols, compare the same stream across regions, run quick filters, export reports, and create shareable playback links so teammates can open the exact same layout.
 
 Tool Link: [Livestream API Details Puller](https://bhavesh-ses.github.io/Livestream-API-Details-Puller/)
 
-# 2\. Advantages
+# 2. Advantages
 
 - **Faster troubleshooting** — inspect stream fields (OAID, DRM, start/end times, audio, overrides) in one place.
 - **Reproducible playback** — generate playback URLs and Share links so QA/eng can reproduce exactly what you see.
@@ -14,7 +14,7 @@ Tool Link: [Livestream API Details Puller](https://bhavesh-ses.github.io/Livestr
 - **Filter & act** — find DRM / Dolby / geo-blocked streams across many outlets, select rows and create test URLs.
 - **Lightweight & shareable** — no heavy infra — runs from a static host + optional proxy for internal APIs.
 
-# 3\. Quick start
+# 3. Quick start
 
 1.  Open the tool.
 2.  Choose an **Outlet** from the top dropdown (affects the Normal page).
@@ -23,7 +23,7 @@ Tool Link: [Livestream API Details Puller](https://bhavesh-ses.github.io/Livestr
 5.  Pick **Headends** and **Protocols** above the table.
 6.  Click **Create URLs & Export** to download CSV, or **Share Playback URL** to copy a link that recreates this layout in the playback tool.
 
-# 4\. UI walkthrough
+# 4. UI walkthrough
 
 ## Header
 
@@ -56,7 +56,7 @@ Tool Link: [Livestream API Details Puller](https://bhavesh-ses.github.io/Livestr
 
   - Results appear as per-outlet tabs; operate on the active tab only.
 
-# 5\. Step-by-step workflows (with quick checklists)
+# 5. Step-by-step workflows (with quick checklists)
 
 ## Workflow A - Quick playback URLs for QA (Normal page)
 
@@ -89,14 +89,14 @@ Tool Link: [Livestream API Details Puller](https://bhavesh-ses.github.io/Livestr
 
 **Use case:** quickly gather test URLs for streams with a specific issue.
 
-# 6\. Share Playback URL - what it encodes & how to use it
+# 6. Share Playback URL - what it encodes & how to use it
 
 - Encodes the selected streams (name + URL lines) in **Base64** plus layout params (rows, cols, refresh, etc.).
 - Preserves **selection order** — first selected becomes first player.
 - Use to send a single link to QA or engineering so they can open the same layout without manual setup.
 - Tip: avoid embedding private tokens in shared links. For long lists, prefer a server-backed short link.
 
-# 7\. Export behavior & formats
+# 7. Export behavior & formats
 
 - **Create URLs & Export (CSV)** — label + URL pairs, one per headend/protocol combination per selected stream.
 - **Extract (XLSX)** — full table for the selected outlet (good for archival).
@@ -106,7 +106,7 @@ Tool Link: [Livestream API Details Puller](https://bhavesh-ses.github.io/Livestr
   - Data: Calibri, 11pt, centered. Light green = match; light red = diff; light yellow = not found; full borders.
   - Includes per-outlet JSON sheets with borders.
 
-# 8\. Operation use cases (real world examples)
+# 8. Operation use cases (real world examples)
 
 ### Use case 1 — Nightly ingest verification
 
@@ -124,7 +124,7 @@ QA wants to test 6 players in a 2×3 grid. Select 6 streams (Normal), choose hea
 
 On-call receives alert for DRM mismatch. Use Filters (DRM) and Compare to narrow affected outlets, export URLs for immediate playback checks, and share the playback URL with the video team.
 
-# 9\. Troubleshooting & quick fixes
+# 9. Troubleshooting & quick fixes
 
 - **403 / no data:** upstream API is IP-restricted or CORS-blocked.
 
@@ -135,13 +135,13 @@ On-call receives alert for DRM mismatch. Use Filters (DRM) and Compare to narrow
 - **Export color not seen:** open XLSX in Excel (not a plain text viewer); ensure the viewer supports cell fills.
 - **Selection not persisting:** selection is global — confirm you are using the same browser tab/session and not clearing selections between views.
 
-# 10\. Security & operational practices (recommended)
+# 10. Security & operational practices (recommended)
 
 - Don’t include sensitive tokens in shared links. Prefer short-lived tokens or server-side retrieval for private resources.
 - Host the proxy inside the corporate network (recommended) or use Cloudflare Tunnel / Argo Tunnel to expose local proxy securely. Limit allowed origins to your GitHub Pages domain.
 - Run local server with a process manager (pm2 or systemd) and enable firewall rules so only required inbound origins/ports are allowed.
 
-# 11\. Quick reference / cheat sheet (copy for desk)
+# 11. Quick reference / cheat sheet (copy for desk)
 
 **Normal page**
 
@@ -161,12 +161,3 @@ On-call receives alert for DRM mismatch. Use Filters (DRM) and Compare to narrow
 
 - Select outlets → Choose filter → Run Filter
 - Switch outlet tabs → select rows → Create URLs / Share
-
-# 12\. Printable checklist before handing to QA
-
-- Confirm outlet(s) selected
-- Search/filter applied correctly
-- Required rows are selected (light-grey)
-- Headend(s) and Protocol(s) chosen
-- Create CSV or copy Share Playback URL
-- If sharing externally, verify URLs do not include private tokens
