@@ -1,2 +1,4 @@
 SequenceNo.,LeftPanelToolName(Customised),ToolsURL,DocumentationFileNameStoredinWordInSameDirectory
 1,"Pro Stream Monitor",https://bhavesh-ses.github.io/URL-Monitoring-Tool/,Pro Stream Monitor.md
+2,"PowerBI Export Filterer",https://bhavesh-ses.github.io/PowerBi_Data_Filter_Tool/,PowerBi Data Segregator.md
+3,"Livestream API Details Puller",https://bhavesh-ses.github.io/Livestream-API-Details-Puller/#/normal,Livestream API Details Puller.md
