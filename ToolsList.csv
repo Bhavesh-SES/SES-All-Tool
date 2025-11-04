@@ -2,3 +2,7 @@ SequenceNo.,LeftPanelToolName(Customised),ToolsURL,DocumentationFileNameStoredin
 1,"Pro Stream Monitor",https://bhavesh-ses.github.io/URL-Monitoring-Tool/,Pro Stream Monitor.md
 2,"PowerBI Export Filterer",https://bhavesh-ses.github.io/PowerBi_Data_Filter_Tool/,PowerBi Data Segregator.md
 3,"Livestream API Details Puller",https://bhavesh-ses.github.io/Livestream-API-Details-Puller/#/normal,Livestream API Details Puller.md
+4,"MK EAE - DCG & DCH",https://bhavesh-ses.github.io/SES_EventViewer/,MK EAE - DCG & DCH.md
+5,"JSON Policy Compare",https://bhavesh-ses.github.io/JSON-Policy-Compare-Tool/,JSON Policy Compare.md
+6,"JSON Variant Compare",https://bhavesh-ses.github.io/JSON-Variant-Compare-Tool/,JSON Variant Compare.md
+7,"Advanced-NRQL-Builder",https://bhavesh-ses.github.io/Advanced-NRQL-Builder/,Advanced-NRQL-Builder.md
