@@ -6,22 +6,17 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>SES-Tool Links — Hub</title>
     <style>
-        /* Reset & base */
+        /* ======= THEME & BASE ======= */
         :root {
             --bg: #0f1724;
-            /* deep navy */
             --card: #0b1220;
             --muted: #9aa4b2;
             --accent: #0ea5a4;
-            /* teal */
             --accent-2: #60a5fa;
-            /* blue */
             --glass: rgba(255, 255, 255, 0.03);
             --white: #e6eef8;
-            --success: #10b981;
-            --danger: #ef4444;
             --shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
         }
 
         html,
@@ -30,10 +25,12 @@
             margin: 0;
             background: linear-gradient(180deg, #071226 0%, #081826 100%);
             color: var(--white);
+            overflow: hidden;
         }
 
         a {
-            color: inherit
+            color: inherit;
+            text-decoration: none
         }
 
         .app {
@@ -42,7 +39,6 @@
             height: 100vh;
         }
 
-        /* Top bar */
         header.topbar {
             display: flex;
             align-items: center;
@@ -105,16 +101,20 @@
             color: var(--white);
         }
 
-        /* Layout */
+        /* ======= WORKSPACE (flex container - Split.js will control widths) ======= */
         .workspace {
-            display: grid;
-            grid-template-columns: 260px 1fr 480px;
+            display: flex;
             gap: 12px;
             padding: 14px;
-            align-items: stretch
+            align-items: stretch;
+            height: calc(100vh - 56px);
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        /* sidebar */
+        /* items inside workspace must be direct children for Split.js selectors */
+
+        /* ======= SIDEBAR ======= */
         .sidebar {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
             border-radius: 12px;
@@ -122,29 +122,30 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            min-height: 0
-        }
-
-        .sidebar.hidden {
-            display: none
+            min-width: 48px;
+            box-sizing: border-box;
+            height: 100%;
+            transition: width 220ms ease, opacity 200ms ease;
+            overflow: hidden;
         }
 
         .sidebar .top {
             display: flex;
             align-items: center;
-            justify-content: space-between
+            gap: 8px
         }
 
-        .hamburger {
+        .sidebar .hamburger {
             background: transparent;
             border: 0;
             color: var(--muted);
             cursor: pointer;
             padding: 6px;
-            border-radius: 6px
+            border-radius: 6px;
+            font-size: 18px
         }
 
-        .pin-btn {
+        .sidebar .pin-btn {
             background: transparent;
             border: 0;
             color: var(--muted);
@@ -156,7 +157,8 @@
         .search {
             display: flex;
             gap: 8px;
-            align-items: center
+            align-items: center;
+            flex: 1
         }
 
         .search input {
@@ -174,7 +176,8 @@
             padding: 6px 2px;
             display: flex;
             flex-direction: column;
-            gap: 6px
+            gap: 6px;
+            height: calc(100% - 120px)
         }
 
         .tool-item {
@@ -212,10 +215,6 @@
             font-weight: 600
         }
 
-        .tool-item small {
-            color: var(--muted)
-        }
-
         .tool-item:hover {
             background: rgba(255, 255, 255, 0.02)
         }
@@ -231,18 +230,36 @@
             color: var(--muted);
             cursor: pointer;
             padding: 8px;
-            border-radius: 6px
+            border-radius: 6px;
+            font-size: 14px
         }
 
-        /* center doc pane */
+        /* collapsed state: hide inner content but reserve column width */
+        .sidebar.collapsed .search,
+        .sidebar.collapsed .tools-list,
+        .sidebar.collapsed .pin-btn,
+        .sidebar.collapsed .title-mini {
+            display: none
+        }
+
+        .sidebar.collapsed .hamburger {
+            margin: auto;
+            display: block
+        }
+
+        /* ======= CENTER (documentation) ======= */
         .center {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
             border-radius: 12px;
             padding: 16px;
-            min-height: 0;
             display: flex;
             flex-direction: column;
-            gap: 8px
+            gap: 8px;
+            min-height: 0;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+            transition: width 200ms ease;
         }
 
         .center .header {
@@ -256,26 +273,33 @@
             font-size: 18px
         }
 
+        .center .center-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
         .doc-content {
             overflow: auto;
-            padding-right: 8px
+            padding-right: 8px;
+            height: calc(100% - 48px);
+            -webkit-overflow-scrolling: touch
         }
 
-        .doc-loading {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--muted)
-        }
+        /* only doc scrolls vertically */
 
-        /* right iframe pane */
+        /* ======= RIGHT (tool iframe preview) ======= */
         .pane-right {
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01));
             border-radius: 12px;
             padding: 8px;
             display: flex;
             flex-direction: column;
-            min-height: 0
+            min-height: 0;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+            transition: width 200ms ease;
         }
 
         .pane-right .controls {
@@ -309,50 +333,24 @@
             padding: 20px
         }
 
-        /* Responsive */
-        @media (max-width:1100px) {
-            .workspace {
-                grid-template-columns: 220px 1fr;
-                grid-template-areas: 'sidebar center' 'sidebar right';
-            }
-
-            .pane-right {
-                grid-column: 1/span 2;
-                height: 320px
-            }
+        /* ======= GUTTERS (Split.js uses .gutter classes) ======= */
+        .gutter {
+            background-color: rgba(255, 255, 255, 0.02);
+            cursor: col-resize;
+            transition: background-color .15s;
         }
 
-        @media (max-width:720px) {
-            .workspace {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                display: none
-            }
-
-            .pane-right {
-                order: 3
-            }
+        .gutter:hover {
+            background-color: rgba(255, 255, 255, 0.04);
         }
 
-        /* simple spinner */
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 3px solid rgba(255, 255, 255, 0.08);
-            border-top-color: var(--accent);
-            animation: spin 1s linear infinite
+        .gutter.gutter-vertical {
+            width: 10px;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg)
-            }
-        }
+        /* wider grab area */
 
-        /* small helpers */
+        /* helpers & misc */
         .muted {
             color: var(--muted)
         }
@@ -377,32 +375,31 @@
             color: var(--muted)
         }
 
-        /* doc html content styling */
-        .doc-content h1 {
-            font-size: 20px
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            border-top-color: var(--accent);
+            animation: spin 1s linear infinite
         }
 
-        .doc-content h2 {
-            font-size: 18px
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
         }
 
-        .doc-content p {
-            line-height: 1.5;
-            color: var(--white);
-        }
+        /* Responsive tweaks */
+        @media (max-width:900px) {
+            .sidebar {
+                min-width: 60px
+            }
 
-        .doc-content code {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 4px;
-            border-radius: 4px;
-            font-family: monospace
-        }
-
-        .doc-content pre {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 10px;
-            border-radius: 6px;
-            overflow: auto
+            .center,
+            .pane-right {
+                min-width: 120px
+            }
         }
     </style>
 </head>
@@ -423,48 +420,48 @@
                     <button id="mode-tools" class="active" title="Show Tools">Tools</button>
                     <button id="mode-docs" title="Show Documentation">Documentation</button>
                 </div>
-                <div style="width:8px"></div>
-                <button id="hamb-global" class="hamburger" title="Toggle sidebar">☰</button>
             </div>
         </header>
 
+        <!-- WORKSPACE: children must be #sidebar, #center, #paneRight for Split.js selectors -->
         <main class="workspace" id="workspace">
             <aside class="sidebar" id="sidebar">
                 <div class="top">
+                    <button id="hambSidebar" class="hamburger" title="Toggle sidebar">☰</button>
                     <div class="search" style="flex:1">
                         <input id="search" placeholder="Search tools..." />
                     </div>
-                    <div style="display:flex;gap:6px;margin-left:8px">
-                        <button id="pin-sidebar" class="pin-btn" title="Pin sidebar">📌</button>
-                    </div>
+                    <button id="pin-sidebar" class="pin-btn" title="Pin sidebar">📌</button>
                 </div>
 
                 <div class="tools-list" id="toolsList" tabindex="0">
                     <!-- populated by JS -->
                 </div>
 
-                <div class="muted small" style="text-align:center;padding:10px">Use the search to quickly filter tools.
-                    Click a tool to load its docs & UI.</div>
+                <div class="muted small" style="text-align:center;padding:10px">Click a tool to load docs & UI. Use the
+                    arrow to open in new tab.</div>
             </aside>
 
             <section class="center" id="center">
                 <div class="header">
                     <h2 id="center-title">SES-Tool Links</h2>
-                    <div style="display:flex;gap:8px;align-items:center">
+                    <div class="center-controls">
                         <div class="doc-loading" id="docStatus" style="display:none">
                             <div class="spinner"></div>
                             <div>Loading</div>
                         </div>
-                        <button id="toggleIframe" class="btn small">Hide Tool</button>
+                        <button id="showToolBtn" class="btn small" title="Show tool preview">Show Tool</button>
+                        <button id="toggleIframe" class="btn small" style="display:none">Hide Tool</button>
                     </div>
                 </div>
-                <div class="doc-content" id="docContent" style="flex:1;min-height:0;overflow:auto;padding-top:6px">
+
+                <div class="doc-content" id="docContent">
                     <div class="notice">No tool selected. Select a tool from the left panel to view documentation and
                         load the tool UI.</div>
                 </div>
             </section>
 
-            <aside class="pane-right" id="paneRight">
+            <aside class="pane-right" id="paneRight" style="width:480px;">
                 <div class="controls">
                     <div class="small muted">Tool Preview</div>
                     <div style="display:flex;gap:8px;align-items:center">
@@ -474,37 +471,46 @@
                 </div>
                 <div class="iframe-wrap" id="iframeWrap">
                     <div class="iframe-placeholder" id="iframePlaceholder">No tool loaded.</div>
-                    <!-- iframe inserted here -->
                 </div>
             </aside>
-
         </main>
     </div>
 
+    <!-- Split.js CDN (used for gutters & drag resize) -->
+    <script src="https://unpkg.com/split.js/dist/split.min.js"></script>
+
     <script>
         /*
-          SES Tools Hub - Single-file static app
-          - Loads ToolsList.csv from same directory
-          - Loads docs from Tool-Documentation/<filename>
-          - Supports .html, .md, .txt, .doc, .docx via appropriate rendering
-          - Embeds tool UI in iframe (if allowed) and provides open-in-new-tab
-          - Left panel: search, pin, hamburger
-          - Top toggle: Tools vs Documentation
-          - Saves last selected tool & sidebar pin state in localStorage
+          SES Tools Hub — updated with Split.js splitters, sidebar collapse, tools/doc modes
+          Single-file. Edit the configuration constants below to adjust min widths and defaults.
         */
 
-        // --------------------- Configuration ---------------------
-        const CSV_PATH = 'ToolsList.csv'; // relative path
-        const DOCS_DIR = 'Tool-Documentation/';
-        const DEFAULT_DOC = 'Overview.html'; // shown in Documentation mode - create this file in Tool-Documentation/
-        const MAX_TOOLS = 500; // safety cap
-        // --------------------- State ---------------------
-        let tools = []; // parsed from CSV
-        let filteredTools = [];
+        // ---------------- CONFIGURABLE KNOBS (edit these if you want different sizing)
+        const CSV_PATH = 'ToolsList.csv';         // relative CSV path (maintain externally)
+        const DOCS_DIR = 'Tool-Documentation/';   // docs folder
+        const DEFAULT_DOC = 'Overview.html';      // shown in Documentation mode when no tool selected
+        const MAX_TOOLS = 500;
+
+        // Layout knobs
+        const LEFT_MIN_PX = 220;      // left panel minimum when expanded
+        const CENTER_MIN_PX = 300;    // center minimum
+        const RIGHT_MIN_PX = 300;     // right panel minimum
+        const LEFT_COLLAPSED_PX = 48; // reserved width when sidebar is collapsed
+        const DEFAULT_MODE = 'tools'; // 'tools' or 'docs' - default mode if no local state
+
+        // localStorage keys
+        const STORAGE_KEY = 'ses_tools_layout_v2';
+
+        // ---------------- STATE ----------------
+        let tools = [], filteredTools = [];
         let selectedToolIndex = null;
         let iframeVisible = true;
+        let splitThree = null; // for docs mode: [sidebar, center, paneRight]
+        let splitTwo = null;   // for tools mode: [sidebar, center] (paneRight hidden)
+        let currentModeValue = null;
 
-        // elements
+        // ---------------- ELEMENTS ----------------
+        const sidebar = document.getElementById('sidebar');
         const toolsListEl = document.getElementById('toolsList');
         const searchEl = document.getElementById('search');
         const centerTitleEl = document.getElementById('center-title');
@@ -512,142 +518,173 @@
         const docStatusEl = document.getElementById('docStatus');
         const modeToolsBtn = document.getElementById('mode-tools');
         const modeDocsBtn = document.getElementById('mode-docs');
-        const sidebarEl = document.getElementById('sidebar');
         const pinBtn = document.getElementById('pin-sidebar');
-        const hamburgerGlobal = document.getElementById('hamb-global');
+        const hambSidebar = document.getElementById('hambSidebar');
+        const showToolBtn = document.getElementById('showToolBtn');
         const toggleIframeBtn = document.getElementById('toggleIframe');
+        const paneRight = document.getElementById('paneRight');
         const iframeWrap = document.getElementById('iframeWrap');
         const iframePlaceholder = document.getElementById('iframePlaceholder');
         const openNewTabBtn = document.getElementById('openNewTab');
         const embedNoticeEl = document.getElementById('embedNotice');
 
-        // --------------------- Helpers ---------------------
+        // helpers
         function $(s, ctx = document) { return ctx.querySelector(s) }
         function $all(s, ctx = document) { return Array.from(ctx.querySelectorAll(s)) }
-        function saveState() {
-            localStorage.setItem('ses_tools_state', JSON.stringify({ selectedToolIndex, iframeVisible, sidebarPinned: sidebarEl.classList.contains('pinned'), mode: currentMode() }));
-        }
-        function loadState() {
-            try {
-                const st = JSON.parse(localStorage.getItem('ses_tools_state') || '{}');
-                if (typeof st.selectedToolIndex === 'number') { selectedToolIndex = st.selectedToolIndex }
-                if (typeof st.iframeVisible === 'boolean') { iframeVisible = st.iframeVisible }
-                if (st.sidebarPinned) { sidebarEl.classList.add('pinned') }
-                if (st.mode === 'docs') { setMode('docs') } else { setMode('tools') }
-            } catch (e) { console.warn('loadState err', e) }
-        }
 
-        function currentMode() { return modeDocsBtn.classList.contains('active') ? 'docs' : 'tools' }
+        // ---------------- localStorage helpers ----------------
+        function readStore() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; } }
+        function writeStore(obj) { const existing = readStore(); localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, ...obj })); }
+
+        // ---------------- UI utilities ----------------
         function setMode(m) {
+            currentModeValue = m;
             if (m === 'docs') { modeDocsBtn.classList.add('active'); modeToolsBtn.classList.remove('active'); }
             else { modeToolsBtn.classList.add('active'); modeDocsBtn.classList.remove('active'); }
-            renderMode();
-            saveState();
+            writeStore({ mode: m });
+            applyMode();
         }
+        function currentMode() { return currentModeValue; }
 
-        // safe HTML escape
-        function escapeHtml(s) { return s.replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] }); }
-
-        // very small markdown -> html converter (covers headings, bold, italics, code blocks, inline code, links, lists)
-        function renderMarkdown(md) {
-            // escape first
-            let html = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            // code blocks ```
-            html = html.replace(/```([\s\S]*?)```/g, function (_, code) { return '<pre><code>' + escapeHtml(code) + '</code></pre>' });
-            // headings
-            html = html.replace(/^###### (.*$)/gim, '<h6>$1</h6>');
-            html = html.replace(/^##### (.*$)/gim, '<h5>$1</h5>');
-            html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
-            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-            // bold & italics
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            // inline code
-            html = html.replace(/`([^`]+)`/g, function (_, c) { return '<code>' + escapeHtml(c) + '</code>' });
-            // links
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-            // unordered lists
-            html = html.replace(/(^|\n)\s*[-\*] (.+)/g, function (_, b, item) { return (b ? b : '') + '<li>' + item + '</li>' });
-            html = html.replace(/(<li>[\s\S]*?<\/li>)/g, function (m) { return '<ul>' + m.replace(/<li>/g, '<li>').replace(/\n/g, '') + '</ul>' });
-            // paragraphs
-            html = html.replace(/\n{2,}/g, '\n\n').split('\n').map(function (line) {
-                if (/^<h|^<ul|^<pre|^<li|^<\/ul|^<\/pre/.test(line) || line.trim() === '') return line;
-                return '<p>' + line + '</p>';
-            }).join('\n');
-            return html;
-        }
-
-        function buildToolCard(tool, idx) {
-            const div = document.createElement('div');
-            div.className = 'tool-item';
-            div.dataset.idx = idx;
-            const left = document.createElement('div'); left.className = 'left';
-            const icon = document.createElement('div'); icon.className = 'icon'; icon.textContent = tool.name.trim().split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
-            const meta = document.createElement('div'); meta.className = 'meta';
-            const name = document.createElement('div'); name.className = 'name'; name.textContent = tool.name;
-            const small = document.createElement('small'); small.textContent = tool.tagline || tool.url.replace(/^https?:\/\//, '');
-            meta.appendChild(name); meta.appendChild(small);
-            left.appendChild(icon); left.appendChild(meta);
-
-            const right = document.createElement('div');
-            const openBtn = document.createElement('button'); openBtn.className = 'open-new'; openBtn.title = 'Open in new tab'; openBtn.innerHTML = '↗️';
-            openBtn.addEventListener('click', (ev) => { ev.stopPropagation(); window.open(tool.url, '_blank'); });
-            right.appendChild(openBtn);
-
-            div.appendChild(left); div.appendChild(right);
-
-            div.addEventListener('click', () => {
-                selectTool(idx);
-            });
-            return div;
-        }
-
-        // --------------------- CSV Parsing ---------------------
-        async function fetchCSV() {
-            try {
-                const res = await fetch(CSV_PATH + '?_=' + Date.now());
-                if (!res.ok) throw new Error('Failed to fetch CSV');
-                let txt = await res.text();
-                // remove BOM
-                txt = txt.replace(/^\uFEFF/, '');
-                parseCSV(txt);
-            } catch (e) {
-                console.error('fetchCSV', e);
-                docContentEl.innerHTML = '<div class="notice">Failed to load ToolsList.csv. Make sure file exists next to index.html and is accessible.</div>';
+        function collapseSidebar(toCollapse) {
+            // toggles collapsed class and updates split sizes
+            if (toCollapse) {
+                sidebar.classList.add('collapsed');
+                // set left to collapsed px in active split
+                applyCollapsedLeftWidth();
+                writeStore({ collapsed: true });
+            } else {
+                sidebar.classList.remove('collapsed');
+                // restore sizes from storage (or defaults)
+                restoreSplitsFromStore();
+                writeStore({ collapsed: false });
             }
         }
 
+        function applyCollapsedLeftWidth() {
+            const containerWidth = document.querySelector('.workspace').clientWidth || window.innerWidth;
+            const leftPercent = Math.round((LEFT_COLLAPSED_PX / containerWidth) * 100);
+            if (currentMode() === 'tools') {
+                if (splitTwo) splitTwo.setSizes([leftPercent, 100 - leftPercent]);
+            } else {
+                if (splitThree) {
+                    // set last two evenly
+                    splitThree.setSizes([leftPercent, Math.max(30, leftPercent ? ((100 - leftPercent) / 2) : 50), Math.max(30, Math.floor((100 - leftPercent) / 2))]);
+                }
+            }
+        }
+
+        // ---------------- Split.js initialization & persistence ----------------
+        function createSplitsForToolsMode(stored) {
+            // Tools mode: only need two panels - sidebar and center (paneRight hidden)
+            // destroy other split if any
+            destroySplits();
+            paneRight.style.display = 'none';
+            // ensure center visible and fills space
+            const defaultSizes = stored && stored.sizesTools ? stored.sizesTools : [20, 80];
+            splitTwo = Split(['#sidebar', '#center'], {
+                sizes: defaultSizes,
+                minSize: [LEFT_MIN_PX, Math.max(200, CENTER_MIN_PX)],
+                gutterSize: 10,
+                onDragEnd: (sizes) => { writeStore({ sizesTools: sizes }); }
+            });
+            // if collapsed saved
+            const st = readStore();
+            if (st.collapsed) collapseSidebar(true);
+        }
+
+        function createSplitsForDocsMode(stored) {
+            destroySplits();
+            paneRight.style.display = 'block';
+            // three pane split
+            const defaultSizes = stored && stored.sizesDocs ? stored.sizesDocs : [20, 50, 30];
+            splitThree = Split(['#sidebar', '#center', '#paneRight'], {
+                sizes: defaultSizes,
+                minSize: [LEFT_MIN_PX, CENTER_MIN_PX, RIGHT_MIN_PX],
+                gutterSize: 10,
+                onDragEnd: (sizes) => { writeStore({ sizesDocs: sizes }); }
+            });
+            const st = readStore();
+            if (st.collapsed) collapseSidebar(true);
+        }
+
+        function destroySplits() {
+            if (splitTwo) { try { splitTwo.destroy(); } catch (e) { } splitTwo = null; }
+            if (splitThree) { try { splitThree.destroy(); } catch (e) { } splitThree = null; }
+        }
+
+        function restoreSplitsFromStore() {
+            const st = readStore();
+            if (currentMode() === 'tools') {
+                if (splitTwo) {
+                    if (st.sizesTools) splitTwo.setSizes(st.sizesTools);
+                    else splitTwo.setSizes([20, 80]);
+                }
+            } else {
+                if (splitThree) {
+                    if (st.sizesDocs) splitThree.setSizes(st.sizesDocs);
+                    else splitThree.setSizes([20, 50, 30]);
+                }
+            }
+        }
+
+        // ---------------- CSV parsing & rendering list ----------------
+        function splitCSVLine(line) { const out = []; let cur = ''; let inQuotes = false; for (let i = 0; i < line.length; i++) { const ch = line[i]; if (ch === '"') { if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; } else { inQuotes = !inQuotes; } } else if (ch === ',' && !inQuotes) { out.push(cur); cur = ''; } else { cur += ch; } } out.push(cur); return out; }
+
         function parseCSV(text) {
-            // simple CSV parser that handles quoted fields with commas
             const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
-            if (lines.length < 1) return;
-            const header = splitCSVLine(lines[0]);
-            const mapping = header.map(h => h.trim());
-            const rows = lines.slice(1).map(l => splitCSVLine(l)).slice(0, MAX_TOOLS);
+            if (!lines.length) return;
+            const header = splitCSVLine(lines[0]).map(h => h.trim());
+            const rows = lines.slice(1).map(l => splitCSVLine(l));
             tools = rows.map(cols => {
                 const obj = {};
-                mapping.forEach((k, i) => { obj[k] = (cols[i] || '').trim(); });
-                // standardize fields
-                return { seq: obj['SequenceNo.'] || obj['Sequence'] || obj['Seq'] || '', name: obj['LeftPanelToolName(Customised)'] || obj['LeftPanelToolName'] || obj['Name'] || 'Untitled', url: obj['ToolsURL'] || obj['URL'] || '', doc: obj['DocumentationFileNameStoredinWordInSameDirectory'] || obj['Doc'] || obj['Documentation'] || '', tagline: '' };
+                header.forEach((k, i) => obj[k] = (cols[i] || '').trim());
+                return {
+                    seq: obj['SequenceNo.'] || obj['Sequence'] || '',
+                    name: obj['LeftPanelToolName(Customised)'] || obj['LeftPanelToolName'] || obj['Name'] || 'Untitled',
+                    url: obj['ToolsURL'] || obj['URL'] || '',
+                    doc: obj['DocumentationFileNameStoredinWordInSameDirectory'] || obj['Doc'] || obj['Documentation'] || ''
+                };
             }).filter(t => t.name);
-            // sort by seq if numeric
-            tools.sort((a, b) => { const na = parseInt(a.seq) || 0, nb = parseInt(b.seq) || 0; return na - nb; });
+            tools.sort((a, b) => (parseInt(a.seq) || 0) - (parseInt(b.seq) || 0));
             filteredTools = tools.slice();
             renderToolsList();
-            // auto-select last or first
-            const st = JSON.parse(localStorage.getItem('ses_tools_state') || '{}');
-            if (typeof st.selectedToolIndex === 'number' && st.selectedToolIndex < tools.length) { selectTool(st.selectedToolIndex); }
+            const st = readStore();
+            if (typeof st.selected === 'number' && st.selected < filteredTools.length) {
+                selectTool(st.selected);
+            } else if (filteredTools.length) selectTool(0);
         }
 
-        function splitCSVLine(line) {
-            const out = []; let cur = ''; let inQuotes = false;
-            for (let i = 0; i < line.length; i++) { const ch = line[i]; if (ch === '"') { if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; } else { inQuotes = !inQuotes; } } else if (ch === ',' && !inQuotes) { out.push(cur); cur = ''; } else { cur += ch; } }
-            out.push(cur); return out;
+        async function fetchCSV() {
+            try {
+                const res = await fetch(CSV_PATH + '?_=' + Date.now());
+                if (!res.ok) throw new Error('CSV fetch failed');
+                const txt = await res.text();
+                parseCSV(txt);
+            } catch (e) {
+                console.error('fetchCSV', e);
+                docContentEl.innerHTML = `<div class="notice">Failed to load ToolsList.csv. Please host this page via http(s) and ensure ToolsList.csv is accessible.</div>`;
+            }
         }
 
-        // --------------------- Render UI ---------------------
+        function buildToolCard(tool, idx) {
+            const div = document.createElement('div'); div.className = 'tool-item'; div.dataset.idx = idx; div.tabIndex = 0;
+            const left = document.createElement('div'); left.className = 'left';
+            const icon = document.createElement('div'); icon.className = 'icon'; icon.textContent = (tool.name || '').trim().split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
+            const meta = document.createElement('div'); meta.className = 'meta';
+            const name = document.createElement('div'); name.className = 'name'; name.textContent = tool.name;
+            meta.appendChild(name);
+            left.appendChild(icon); left.appendChild(meta);
+            const right = document.createElement('div');
+            const openBtn = document.createElement('button'); openBtn.className = 'open-new'; openBtn.title = 'Open in new tab'; openBtn.innerHTML = '↗️';
+            openBtn.addEventListener('click', (ev) => { ev.stopPropagation(); if (tool.url) window.open(tool.url, '_blank'); else alert('No URL configured for this tool.'); });
+            right.appendChild(openBtn);
+            div.appendChild(left); div.appendChild(right);
+            div.addEventListener('click', () => selectTool(idx));
+            div.addEventListener('keydown', (e) => { if (e.key === 'Enter') selectTool(idx); });
+            return div;
+        }
+
         function renderToolsList() {
             toolsListEl.innerHTML = '';
             filteredTools.forEach((t, idx) => {
@@ -656,159 +693,148 @@
                 toolsListEl.appendChild(item);
             });
         }
+        function filterTools(q) { const qq = q.trim().toLowerCase(); filteredTools = tools.filter(t => t.name.toLowerCase().includes(qq)); renderToolsList(); }
 
-        function filterTools(q) {
-            const qq = q.trim().toLowerCase();
-            filteredTools = tools.filter(t => t.name.toLowerCase().includes(qq) || (t.tagline || '').toLowerCase().includes(qq));
-            renderToolsList();
+        // ---------------- Selection & content loading ----------------
+        function highlightSelected(idx) {
+            $all('.tool-item').forEach(el => el.classList.toggle('active', Number(el.dataset.idx) === idx));
         }
 
-        // --------------------- Selection & Loading ---------------------
         async function selectTool(idx) {
             if (idx == null || idx < 0 || idx >= filteredTools.length) return;
-            // Map filtered index to tools array index
             const tool = filteredTools[idx];
-            // find index in full tools array
-            const realIndex = tools.indexOf(tool);
-            selectedToolIndex = realIndex;
-            // highlight
-            $all('.tool-item').forEach(el => el.classList.toggle('active', el.dataset.idx == idx));
-
+            selectedToolIndex = idx;
+            highlightSelected(idx);
             centerTitleEl.textContent = tool.name;
-            // update open new tab
-            openNewTabBtn.onclick = () => window.open(tool.url, '_blank');
-
-            // load doc
+            openNewTabBtn.onclick = () => { if (tool.url) window.open(tool.url, '_blank'); else alert('No URL'); };
+            writeStore({ selected: idx });
             await loadDocFor(tool);
-            // load iframe if in Tools mode
-            if (currentMode() === 'tools') loadIframeFor(tool);
-            saveState();
+            // Tools mode: load iframe by default (tool-first). Docs mode: only load iframe when pane visible
+            if (currentMode() === 'tools') {
+                loadIframeFor(tool);
+            } else {
+                // if paneRight visible, load iframe
+                const st = readStore();
+                if (st.showTool) loadIframeFor(tool);
+                else clearIframe();
+            }
         }
 
         async function loadDocFor(tool) {
             docStatusEl.style.display = 'flex';
             docContentEl.innerHTML = '';
             try {
-                const filename = tool.doc || '';
-                if (!filename) { docContentEl.innerHTML = '<div class="notice">No documentation filename provided in CSV for this tool.</div>'; return; }
+                const filename = (tool.doc || '').trim();
+                if (!filename) { docContentEl.innerHTML = '<div class="notice">No documentation filename provided for this tool.</div>'; return; }
                 const ext = filename.split('.').pop().toLowerCase();
                 const url = DOCS_DIR + encodeURIComponent(filename);
-                if (ext === 'md' || ext === 'markdown') {
-                    const res = await fetch(url);
-                    if (!res.ok) throw new Error('doc fetch failed');
-                    const txt = await res.text();
-                    docContentEl.innerHTML = renderMarkdown(txt);
-                } else if (ext === 'html' || ext === 'htm') {
-                    const res = await fetch(url);
-                    if (!res.ok) throw new Error('doc fetch failed');
-                    const txt = await res.text();
-                    // inject sanitized-ish - minimal; because files come from same repo trust them
-                    docContentEl.innerHTML = txt;
-                } else if (ext === 'txt') {
-                    const res = await fetch(url);
-                    const txt = await res.text();
-                    docContentEl.innerHTML = '<pre>' + escapeHtml(txt) + '</pre>';
-                } else if (ext === 'doc' || ext === 'docx' || ext === 'pdf' || ext === 'ppt' || ext === 'pptx') {
-                    // Use Microsoft Office Online viewer which can embed doc/pdf if publicly accessible.
+                if (ext === 'md' || ext === 'markdown') { const res = await fetch(url); if (!res.ok) throw new Error('doc fetch failed'); const txt = await res.text(); docContentEl.innerHTML = renderMarkdown(txt); }
+                else if (ext === 'html' || ext === 'htm') { const res = await fetch(url); if (!res.ok) throw new Error('doc fetch failed'); docContentEl.innerHTML = await res.text(); }
+                else if (ext === 'txt') { const res = await fetch(url); const txt = await res.text(); docContentEl.innerHTML = '<pre>' + escapeHtml(txt) + '</pre>'; }
+                else if (['doc', 'docx', 'pdf', 'ppt', 'pptx'].includes(ext)) {
                     const viewer = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(new URL(url, location.href).href);
-                    docContentEl.innerHTML = '<div style="height:600px"><iframe src="' + viewer + '" style="width:100%;height:100%;border:0" loading="lazy"></iframe></div>';
+                    docContentEl.innerHTML = '<div style="height:100%"><iframe src="' + viewer + '" style="width:100%;height:100%;border:0" loading="lazy"></iframe></div>';
                 } else {
-                    // fallback - try to fetch and show
-                    const res = await fetch(url);
-                    if (res.ok) { const txt = await res.text(); docContentEl.innerHTML = '<pre>' + escapeHtml(txt) + '</pre>'; }
-                    else docContentEl.innerHTML = '<div class="notice">Unsupported doc type: ' + escapeHtml(ext) + '</div>';
+                    const res = await fetch(url); if (res.ok) { const txt = await res.text(); docContentEl.innerHTML = '<pre>' + escapeHtml(txt) + '</pre>'; } else docContentEl.innerHTML = '<div class="notice">Unsupported doc type: ' + escapeHtml(ext) + '</div>';
                 }
             } catch (e) {
                 console.error('loadDocFor', e);
-                docContentEl.innerHTML = '<div class="notice">Failed to load documentation. Make sure the file exists in ' + DOCS_DIR + ' and is accessible. Error: ' + escapeHtml(e.message || String(e)) + '</div>';
+                docContentEl.innerHTML = '<div class="notice">Failed to load documentation. Ensure file exists in ' + DOCS_DIR + ' and is accessible via http(s).</div>';
             } finally { docStatusEl.style.display = 'none'; }
         }
 
         function clearIframe() {
-            const existing = document.getElementById('toolFrame');
-            if (existing) existing.remove();
-            iframePlaceholder.style.display = 'flex';
-            embedNoticeEl.textContent = '';
+            const existing = document.getElementById('toolFrame'); if (existing) existing.remove();
+            iframePlaceholder.style.display = 'flex'; embedNoticeEl.textContent = '';
         }
 
         function loadIframeFor(tool) {
             clearIframe();
-            if (!tool.url) { iframePlaceholder.textContent = 'No URL provided for this tool.'; return; }
+            if (!tool || !tool.url) { iframePlaceholder.textContent = 'No URL provided for this tool.'; return; }
             iframePlaceholder.style.display = 'none';
             const frame = document.createElement('iframe'); frame.id = 'toolFrame'; frame.className = 'tool-frame'; frame.src = tool.url; frame.loading = 'lazy';
-            // detect embed blocked by trying to access contentWindow on load
-            let loaded = false;
             frame.addEventListener('load', () => {
-                try {
-                    // try same-origin access; will throw DOMException if cross-origin
-                    const cw = frame.contentWindow.document; // will throw if cross-origin
-                    // if succeeded, embedding allowed
-                    embedNoticeEl.textContent = '';
-                } catch (e) {
-                    // cross-origin - embedding may still succeed, but we can't access contentWindow; embedding allowed if no X-Frame-Options
-                    // There is no reliable way to detect X-Frame-Options blocked other than fetch HEAD - but that fails cross-origin. We'll try a timeout fallback.
-                    // If the frame's contentWindow exists but is inaccessible, we'll optimistically assume embedding succeeded. However if the browser blocks, the iframe will fire 'error' rarely.
-                    // Show a note that if the tool doesn't render, user can open in new tab.
-                    embedNoticeEl.textContent = 'If the tool does not appear, it might block embedding. Use "Open" to open in a new tab.';
+                try { const cw = frame.contentWindow.document; embedNoticeEl.textContent = ''; } catch (e) {
+                    embedNoticeEl.textContent = 'If the tool does not appear, it might block embedding. Use "Open" to open in new tab.';
                 }
             });
-            // fallback if iframe stays blank (e.g., blocked) after 2.5s - show message
-            const checkTimeout = setTimeout(() => {
-                // if iframe still has no content and placeholder hidden, show message below
-                // We cannot reliably detect blocked state cross-origin; so display useful hint.
-                if (frame && frame.contentWindow) {
-                    // can't introspect; do nothing
-                }
-                if (iframeWrap && iframeWrap.innerText.trim() === '') {
-                    // nothing
-                }
-            }, 2500);
             iframeWrap.appendChild(frame);
         }
 
-        // --------------------- Mode rendering ---------------------
-        function renderMode() {
-            if (currentMode() === 'docs') {
-                // show docs-only: center shows DEFAULT_DOC; right pane hides iframe
-                toggleIframe(false);
-                loadDefaultDoc();
-            } else {
-                // tools mode: show list + selected tool's doc + iframe
-                if (selectedToolIndex == null && tools.length > 0) { selectTool(0); }
-                if (selectedToolIndex != null) { selectTool(selectedToolIndex); }
-                toggleIframe(iframeVisible);
-            }
+        // ---------------- small utils ----------------
+        function escapeHtml(s) { return String(s).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' }[c])); }
+        function renderMarkdown(md) { // small markdown renderer (works for our docs)
+            let html = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            html = html.replace(/```([\s\S]*?)```/g, (_, code) => '<pre><code>' + escapeHtml(code) + '</code></pre>');
+            html = html.replace(/^###### (.*$)/gim, '<h6>$1</h6>');
+            html = html.replace(/^##### (.*$)/gim, '<h5>$1</h5>');
+            html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            html = html.replace(/`([^`]+)`/g, (_, c) => '<code>' + escapeHtml(c) + '</code>');
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+            html = html.replace(/(^|\n)\s*[-*] (.+)/g, (_, b, item) => (b ? b : '') + '<li>' + item + '</li>');
+            html = html.replace(/(<li>[\s\S]*?<\/li>)/g, m => '<ul>' + m.replace(/\n/g, '') + '</ul>');
+            html = html.replace(/\n{2,}/g, '\n\n').split('\n').map(line => {
+                if (/^<h|^<ul|^<pre|^<li|^<\/ul|^<\/pre/.test(line) || line.trim() === '') return line;
+                return '<p>' + line + '</p>';
+            }).join('\n');
+            return html;
         }
 
-        async function loadDefaultDoc() {
-            docContentEl.innerHTML = '';
-            docStatusEl.style.display = 'flex';
-            try {
-                const url = DOCS_DIR + DEFAULT_DOC;
-                const ext = DEFAULT_DOC.split('.').pop().toLowerCase();
-                if (ext === 'html' || ext === 'htm') { const r = await fetch(url); docContentEl.innerHTML = await r.text(); }
-                else if (ext === 'md') { const r = await fetch(url); const t = await r.text(); docContentEl.innerHTML = renderMarkdown(t); }
-                else { const r = await fetch(url); const t = await r.text(); docContentEl.innerHTML = '<pre>' + escapeHtml(t) + '</pre>'; }
-            } catch (e) { docContentEl.innerHTML = '<div class="notice">Failed to load default documentation: ' + escapeHtml(String(e)) + '</div>'; }
-            finally { docStatusEl.style.display = 'none'; }
-        }
-
-        // --------------------- UI events ---------------------
+        // ---------------- UI events & behavior ----------------
         searchEl.addEventListener('input', (e) => filterTools(e.target.value));
-        modeDocsBtn.addEventListener('click', () => setMode('docs'));
         modeToolsBtn.addEventListener('click', () => setMode('tools'));
+        modeDocsBtn.addEventListener('click', () => setMode('docs'));
 
-        hamburgerGlobal.addEventListener('click', () => { sidebarEl.classList.toggle('hidden'); saveState(); });
-        pinBtn.addEventListener('click', () => { sidebarEl.classList.toggle('pinned'); if (sidebarEl.classList.contains('pinned')) sidebarEl.classList.remove('hidden'); saveState(); });
+        hambSidebar.addEventListener('click', () => {
+            const collapsed = sidebar.classList.contains('collapsed');
+            collapseSidebar(!collapsed);
+        });
 
-        toggleIframeBtn.addEventListener('click', () => { toggleIframe(!iframeVisible); saveState(); });
-        function toggleIframe(show) {
-            iframeVisible = !!show; if (!iframeVisible) { // hide
-                iframeWrap.style.display = 'none'; toggleIframeBtn.textContent = 'Show Tool';
-            } else { iframeWrap.style.display = 'flex'; toggleIframeBtn.textContent = 'Hide Tool'; }
-        }
+        pinBtn.addEventListener('click', () => { sidebar.classList.toggle('pinned'); if (sidebar.classList.contains('pinned')) sidebar.classList.remove('hidden'); writeStore({ pinned: sidebar.classList.contains('pinned') }) });
 
-        // keyboard nav: up/down to navigate tools list
+        showToolBtn.addEventListener('click', () => {
+            // toggle show tool in docs mode
+            const st = readStore();
+            const newShow = !st.showTool;
+            writeStore({ showTool: newShow });
+            if (newShow) {
+                // open right pane (create three-split if necessary)
+                if (currentMode() !== 'docs') return;
+                createSplitsForDocsMode(readStore());
+                // load iframe for selected
+                if (selectedToolIndex != null) loadIframeFor(filteredTools[selectedToolIndex]);
+                showToolBtn.textContent = 'Hide Tool';
+            } else {
+                // hide right pane
+                if (splitThree) {
+                    // record sizes and set right to 0 by changing sizes
+                    const sizes = readStore().sizesDocs || [20, 50, 30];
+                    writeStore({ sizesDocs: sizes });
+                    // hide pane and recreate splitTwo? we'll recreate splitThree but set right to 0 by hiding pane
+                    paneRight.style.display = 'none';
+                    // create two-split for sidebar + center to keep resizing working
+                    createSplitsForToolsMode(readStore());
+                }
+                showToolBtn.textContent = 'Show Tool';
+                clearIframe();
+            }
+        });
+
+        toggleIframeBtn.addEventListener('click', () => {
+            iframeVisible = !iframeVisible;
+            if (!iframeVisible) { iframeWrap.style.display = 'none'; toggleIframeBtn.textContent = 'Show Tool'; }
+            else { iframeWrap.style.display = 'block'; toggleIframeBtn.textContent = 'Hide Tool'; }
+            writeStore({ iframeVisible });
+        });
+
+        openNewTabBtn.addEventListener('click', () => { if (selectedToolIndex == null) return alert('No tool selected'); const tp = filteredTools[selectedToolIndex]; if (tp && tp.url) window.open(tp.url, '_blank'); });
+
+        // key navigation
         toolsListEl.addEventListener('keydown', (e) => {
             const visible = $all('.tool-item'); if (!visible.length) return;
             const focused = document.activeElement;
@@ -816,22 +842,90 @@
             if (e.key === 'ArrowUp') { e.preventDefault(); const prev = focused.previousElementSibling || visible[visible.length - 1]; prev.focus(); }
         });
 
-        // open new tab btn
-        openNewTabBtn.addEventListener('click', () => {
-            if (selectedToolIndex == null) return alert('No tool selected');
-            const tool = tools[selectedToolIndex]; window.open(tool.url, '_blank');
-        });
+        // ---------------- Mode application (creates appropriate splits) ----------------
+        function applyMode() {
+            const store = readStore();
+            if (currentMode() === 'tools') {
+                // Tools mode: show paneRight hidden, create two-split (sidebar + center)
+                paneRight.style.display = 'none';
+                // ensure center visible
+                createSplitsForToolsMode(store);
+                // update center controls
+                showToolBtn.style.display = 'none';
+                toggleIframeBtn.style.display = 'none';
+                // load selected tool's iframe immediately (tool-first)
+                if (selectedToolIndex != null) loadIframeFor(filteredTools[selectedToolIndex]);
+            } else {
+                // Docs mode: show three-pane split with paneRight hidden initially (unless store.showTool)
+                if (store.showTool) {
+                    createSplitsForDocsMode(store);
+                    showToolBtn.textContent = 'Hide Tool';
+                } else {
+                    // hide right and create two-split (sidebar + center) so center occupies full space
+                    paneRight.style.display = 'none';
+                    createSplitsForToolsMode(store);
+                    showToolBtn.textContent = 'Show Tool';
+                }
+                showToolBtn.style.display = 'inline-block';
+                toggleIframeBtn.style.display = 'none';
+                // load doc for selection
+                if (selectedToolIndex != null) loadDocFor(filteredTools[selectedToolIndex]);
+                else loadDefaultDoc();
+                // if store.showTool true then load iframe as well
+                if (store.showTool && selectedToolIndex != null) loadIframeFor(filteredTools[selectedToolIndex]);
+            }
+        }
 
-        // responsiveness: if sidebar pinned saved, keep
-        window.addEventListener('resize', () => {/* noop for now */ });
+        // ---------------- default docs loader ----------------
+        async function loadDefaultDoc() {
+            docContentEl.innerHTML = ''; docStatusEl.style.display = 'flex';
+            try {
+                const url = DOCS_DIR + DEFAULT_DOC; const ext = DEFAULT_DOC.split('.').pop().toLowerCase();
+                const res = await fetch(url);
+                if (res.ok) {
+                    if (ext === 'html' || ext === 'htm') docContentEl.innerHTML = await res.text();
+                    else if (ext === 'md') docContentEl.innerHTML = renderMarkdown(await res.text());
+                    else docContentEl.innerHTML = '<pre>' + escapeHtml(await res.text()) + '</pre>';
+                } else docContentEl.innerHTML = '<div class="notice">Default documentation not found.</div>';
+            } catch (e) { docContentEl.innerHTML = '<div class="notice">Failed to load default documentation.</div>'; }
+            finally { docStatusEl.style.display = 'none'; }
+        }
 
-        // --------------------- Init ---------------------
-        loadState();
-        fetchCSV();
-        renderMode();
+        // ---------------- init & restore ----------------
+        function init() {
+            // restore state
+            const st = readStore();
+            const mode = st.mode || DEFAULT_MODE;
+            currentModeValue = mode;
+            if (mode === 'docs') { modeDocsBtn.classList.add('active'); modeToolsBtn.classList.remove('active'); }
+            else { modeToolsBtn.classList.add('active'); modeDocsBtn.classList.remove('active'); }
 
-        // small graceful fallback: if CSV fails, show default docs
-        setTimeout(() => { if (!tools.length) { if (currentMode() === 'docs') loadDefaultDoc(); } }, 1200);
+            // fetch csv & then set splits after list rendered
+            fetchCSV().then(() => {
+                // create splits based on mode
+                if (currentMode() === 'tools') {
+                    createSplitsForToolsMode(st);
+                } else {
+                    if (st.showTool) createSplitsForDocsMode(st);
+                    else createSplitsForToolsMode(st);
+                }
+                // if collapsed was true, apply collapsed state
+                if (st.collapsed) collapseSidebar(true);
+            });
+
+            // apply collapsed class if stored
+            if (st.collapsed) sidebar.classList.add('collapsed');
+            // restore iframeVisible
+            if (typeof st.iframeVisible === 'boolean') iframeVisible = st.iframeVisible;
+            // center showTool button text
+            if (st.showTool) showToolBtn.textContent = 'Hide Tool'; else showToolBtn.textContent = 'Show Tool';
+        }
+
+        // ---------------- DOM ready ----------------
+        document.addEventListener('DOMContentLoaded', init);
+
+        // ---------------- Graceful fallback for small delays ----------------
+        setTimeout(() => { const st = readStore(); if (!tools.length) { if (currentMode() === 'docs') loadDefaultDoc(); } }, 1200);
 
     </script>
 </body>
