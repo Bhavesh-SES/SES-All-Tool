@@ -576,37 +576,68 @@
 
         // ---------------- Split.js initialization & persistence ----------------
         function createSplitsForToolsMode(stored) {
-            // Tools mode: only need two panels - sidebar and center (paneRight hidden)
-            // destroy other split if any
+            // Tools mode: two panels - sidebar and paneRight (paneRight becomes the main tool area)
             destroySplits();
-            paneRight.style.display = 'none';
-            // ensure center visible and fills space
-            const defaultSizes = stored && stored.sizesTools ? stored.sizesTools : [20, 80];
-            splitTwo = Split(['#sidebar', '#center'], {
+
+            // ensure center (doc) is hidden and paneRight is visible for tool-first behavior
+            const centerEl = document.getElementById('center');
+            centerEl.style.display = 'none';
+            paneRight.style.display = 'block';
+
+            // default sizes: left and main area (paneRight)
+            const defaultSizes = (stored && stored.sizesTools) ? stored.sizesTools : [20, 80];
+
+            // create split between sidebar and paneRight
+            splitTwo = Split(['#sidebar', '#paneRight'], {
                 sizes: defaultSizes,
-                minSize: [LEFT_MIN_PX, Math.max(200, CENTER_MIN_PX)],
+                minSize: [LEFT_MIN_PX, Math.max(300, RIGHT_MIN_PX)],
                 gutterSize: 10,
                 onDragEnd: (sizes) => { writeStore({ sizesTools: sizes }); }
             });
-            // if collapsed saved
+
+            // if sidebar collapsed flag present, apply collapsed width
             const st = readStore();
             if (st.collapsed) collapseSidebar(true);
         }
 
+
         function createSplitsForDocsMode(stored) {
+            // Ensure any previous splits removed
             destroySplits();
-            paneRight.style.display = 'block';
-            // three pane split
-            const defaultSizes = stored && stored.sizesDocs ? stored.sizesDocs : [20, 50, 30];
-            splitThree = Split(['#sidebar', '#center', '#paneRight'], {
-                sizes: defaultSizes,
-                minSize: [LEFT_MIN_PX, CENTER_MIN_PX, RIGHT_MIN_PX],
-                gutterSize: 10,
-                onDragEnd: (sizes) => { writeStore({ sizesDocs: sizes }); }
-            });
-            const st = readStore();
+
+            // Make sure center (docs) is visible
+            const centerEl = document.getElementById('center');
+            centerEl.style.display = 'block';
+
+            // Decide if paneRight should be visible (user may have toggled showTool)
+            const st = stored || readStore();
+            const shouldShowRight = !!st.showTool;
+
+            // If right should not be shown, hide it and create two-split between sidebar and center
+            if (!shouldShowRight) {
+                paneRight.style.display = 'none';
+                // create split between sidebar and center so center can take full main area
+                splitTwo = Split(['#sidebar', '#center'], {
+                    sizes: st.sizesDocs && st.sizesDocs.length >= 2 ? [st.sizesDocs[0], st.sizesDocs[1] + (st.sizesDocs[2] || 0)] : [20, 80],
+                    minSize: [LEFT_MIN_PX, CENTER_MIN_PX],
+                    gutterSize: 10,
+                    onDragEnd: (sizes) => { writeStore({ sizesDocs: [sizes[0], sizes[1], RIGHT_MIN_PX] }); }
+                });
+            } else {
+                // show right and create three-pane split
+                paneRight.style.display = 'block';
+                const defaultSizes = st.sizesDocs ? st.sizesDocs : [20, 50, 30];
+                splitThree = Split(['#sidebar', '#center', '#paneRight'], {
+                    sizes: defaultSizes,
+                    minSize: [LEFT_MIN_PX, CENTER_MIN_PX, RIGHT_MIN_PX],
+                    gutterSize: 10,
+                    onDragEnd: (sizes) => { writeStore({ sizesDocs: sizes }); }
+                });
+            }
+
             if (st.collapsed) collapseSidebar(true);
         }
+
 
         function destroySplits() {
             if (splitTwo) { try { splitTwo.destroy(); } catch (e) { } splitTwo = null; }
@@ -705,20 +736,45 @@
             const tool = filteredTools[idx];
             selectedToolIndex = idx;
             highlightSelected(idx);
+
             centerTitleEl.textContent = tool.name;
-            openNewTabBtn.onclick = () => { if (tool.url) window.open(tool.url, '_blank'); else alert('No URL'); };
-            writeStore({ selected: idx });
-            await loadDocFor(tool);
-            // Tools mode: load iframe by default (tool-first). Docs mode: only load iframe when pane visible
+            openNewTabBtn.onclick = () => { if (tool.url) window.open(tool.url, '_blank'); };
+
+            // Behavior depends on current mode
             if (currentMode() === 'tools') {
-                loadIframeFor(tool);
-            } else {
-                // if paneRight visible, load iframe
+                // Tools-mode: ensure paneRight is visible and center hidden; create/update splits accordingly
                 const st = readStore();
-                if (st.showTool) loadIframeFor(tool);
-                else clearIframe();
+                // Ensure center hidden, paneRight visible
+                document.getElementById('center').style.display = 'none';
+                paneRight.style.display = 'block';
+                // create or restore split between sidebar and paneRight
+                createSplitsForToolsMode(st);
+                // Load iframe for the tool (tool-first)
+                loadIframeFor(tool);
+                // Clear doc content (not needed in tools mode)
+                docContentEl.innerHTML = '';
+            } else {
+                // Docs-mode: show docs in center; show tool only if user requested it
+                document.getElementById('center').style.display = 'block';
+                const st = readStore();
+                // If user has showTool on, create three-split; else center occupies main area
+                if (st.showTool) {
+                    createSplitsForDocsMode(st);
+                    // ensure paneRight visible and load iframe
+                    paneRight.style.display = 'block';
+                    loadIframeFor(tool);
+                } else {
+                    // paneRight hidden, split between sidebar and center
+                    createSplitsForDocsMode(st);
+                    clearIframe();
+                }
+                // load docs for the tool
+                await loadDocFor(tool);
             }
+
+            writeStore({ selected: idx });
         }
+
 
         async function loadDocFor(tool) {
             docStatusEl.style.display = 'flex';
