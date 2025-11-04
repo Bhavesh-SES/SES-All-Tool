@@ -112,6 +112,40 @@
             overflow: hidden;
         }
 
+        /* ---------- ADDED: ensure split children stretch vertically and inner scrolling works ---------- */
+        /* Ensure direct children of .workspace are flex columns and can shrink/grow properly */
+        .workspace>* {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            /* very important for children to allow inner scroll */
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Ensure center and paneRight's inner containers occupy full height */
+        .center,
+        .pane-right,
+        .pane-right .iframe-wrap,
+        .iframe-wrap {
+            height: 100%;
+            min-height: 0;
+        }
+
+        /* Make embedded iframe fill the iframe container */
+        iframe.tool-frame {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* doc-content already scrolls; keep it constrained by center's height */
+        .doc-content {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+
         /* items inside workspace must be direct children for Split.js selectors */
 
         /* ======= SIDEBAR ======= */
@@ -559,6 +593,8 @@
                 restoreSplitsFromStore();
                 writeStore({ collapsed: false });
             }
+            // force refresh once DOM updated
+            setTimeout(() => refreshSplits(), 80);
         }
 
         function applyCollapsedLeftWidth() {
@@ -598,6 +634,7 @@
             // if sidebar collapsed flag present, apply collapsed width
             const st = readStore();
             if (st.collapsed) collapseSidebar(true);
+            refreshSplits();
         }
 
 
@@ -636,6 +673,7 @@
             }
 
             if (st.collapsed) collapseSidebar(true);
+            refreshSplits();
         }
 
 
@@ -643,6 +681,27 @@
             if (splitTwo) { try { splitTwo.destroy(); } catch (e) { } splitTwo = null; }
             if (splitThree) { try { splitThree.destroy(); } catch (e) { } splitThree = null; }
         }
+
+        /* ---------- ADDED: refreshSplit(s) helper ---------- */
+        /* Call this when you modify pane visibility or change splits so Split.js recalculates sizes */
+        function refreshSplits() {
+            try {
+                if (splitTwo && typeof splitTwo.getSizes === 'function' && typeof splitTwo.setSizes === 'function') {
+                    const s = splitTwo.getSizes(); // get current sizes (percent)
+                    // reapply the same sizes to force relayout
+                    splitTwo.setSizes(s);
+                }
+            } catch (e) { /* ignore */ }
+            try {
+                if (splitThree && typeof splitThree.getSizes === 'function' && typeof splitThree.setSizes === 'function') {
+                    const s3 = splitThree.getSizes();
+                    splitThree.setSizes(s3);
+                }
+            } catch (e) { /* ignore */ }
+            // Also trigger a reflow for safety
+            requestAnimationFrame(() => { window.dispatchEvent(new Event('resize')); });
+        }
+
 
         function restoreSplitsFromStore() {
             const st = readStore();
@@ -800,22 +859,35 @@
         }
 
         function clearIframe() {
-            const existing = document.getElementById('toolFrame'); if (existing) existing.remove();
-            iframePlaceholder.style.display = 'flex'; embedNoticeEl.textContent = '';
+            const existing = document.getElementById('toolFrame');
+            if (existing) {
+                // don't remove the iframe from DOM when hiding; just hide it so it can be reused quickly
+                existing.style.display = 'none';
+            }
+            // show placeholder so users see a clear message
+            iframePlaceholder.style.display = 'flex';
+            embedNoticeEl.textContent = '';
         }
 
+
         function loadIframeFor(tool) {
-            clearIframe();
+            // If an existing iframe is present, reuse it (and update src if needed)
+            let existing = document.getElementById('toolFrame');
+            if (existing) {
+                existing.style.display = 'block';
+                // update src only if different to avoid reloads when not needed
+                if (existing.src !== tool.url) existing.src = tool.url;
+                iframePlaceholder.style.display = 'none';
+                return;
+            }
+
+            // No existing iframe -> create fresh
             if (!tool || !tool.url) { iframePlaceholder.textContent = 'No URL provided for this tool.'; return; }
             iframePlaceholder.style.display = 'none';
             const frame = document.createElement('iframe'); frame.id = 'toolFrame'; frame.className = 'tool-frame'; frame.src = tool.url; frame.loading = 'lazy';
-            frame.addEventListener('load', () => {
-                try { const cw = frame.contentWindow.document; embedNoticeEl.textContent = ''; } catch (e) {
-                    embedNoticeEl.textContent = 'If the tool does not appear, it might block embedding. Use "Open" to open in new tab.';
-                }
-            });
             iframeWrap.appendChild(frame);
         }
+
 
         // ---------------- small utils ----------------
         function escapeHtml(s) { return String(s).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' }[c])); }
@@ -864,6 +936,7 @@
                 createSplitsForDocsMode(readStore());
                 // load iframe for selected
                 if (selectedToolIndex != null) loadIframeFor(filteredTools[selectedToolIndex]);
+                setTimeout(() => refreshSplits(), 60);
                 showToolBtn.textContent = 'Hide Tool';
             } else {
                 // hide right pane
