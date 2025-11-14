@@ -9,7 +9,7 @@ Admins have extended management capabilities.
 
 ---
 
-## 🔐 Login & Signup
+## Login & Signup
 
 ### **Login**
 - Log in using email + password.
@@ -24,21 +24,21 @@ Authentication & roles are managed securely via **Firebase**.
 
 ---
 
-## 👤 User Roles
+##  User Roles
 
-### 🔸 **Admin**
+###  **Admin**
 Admins have full privileges:
 - Add / edit / delete *any* saved query  
 - View all saved queries  
 - (Future) Manage user roles  
 
-### 🔹 **Normal User**
+###  **Normal User**
 - Create, save, load, delete **their own queries only**
 - Can only view/edit their own saved queries
 
 ---
 
-## 🧩 Table & Column Selection
+## Table & Column Selection
 
 1. Select a **table** from the dropdown  
    *(JavaScriptError, PageAction, MobileRequestError, etc.)*
@@ -51,7 +51,7 @@ Admins have full privileges:
 
 ---
 
-## ⚙️ Query Builder Options
+## Query Builder Options
 
 ### **1. Add Filter**
 - Add multiple filters  
@@ -89,7 +89,7 @@ Common functions:
 
 ---
 
-## 💾 Save & Load Queries
+## Save & Load Queries
 
 ### **Save Query**
 Click **Save Query**, then enter:
@@ -127,21 +127,21 @@ Features:
 
 ---
 
-## 🗂 Saved Query Management
+## Saved Query Management
 - Users can delete **their own** saved queries
 - Admins can delete **any** query
 - Search + filter quickly using Select2 dropdown
 
 ---
 
-## 📝 Notes & Tips
+## Notes & Tips
 - **Auto-refresh bug workaround:** Toggle OFF → ON once if it doesn’t start automatically.
 - Use meaningful **descriptions** so teammates understand each query.
 - All stored data is protected via Firebase security rules.
 
 ---
 
-## 📘 Example Use Case
+## Example Use Case
 
 ### **Goal:**  
 View **JavaScriptError** events for **iOS** users in the **last 30 minutes**, grouped by error message.
