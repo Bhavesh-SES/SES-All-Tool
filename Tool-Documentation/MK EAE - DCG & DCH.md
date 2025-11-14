@@ -1,81 +1,151 @@
-MK EAE Response Viewer – User Guide
+# **MK EAE – DCG & DCH – User Guide**
 
-**Overview:** The MK EAE Response Viewer is a browser-based tool that fetches event metadata from two MediaKind endpoints (DCG and DCH) and presents it side-by-side for quick inspection, searching, and export.
+### **Purpose**
 
-Link: [https://bhavesh-ses.github.io/SES_EventViewer/](https://bhavesh-ses.github.io/SES_EventViewer/)
+The **MK EAE – DCG & DCH Event Explorer** is an operational tool designed for monitoring, validating, and comparing MediaKind (MK) EAE event metadata across DCG and DCH regions. It is built specifically for Operations, L1/L2 Support, and Engineering teams to accelerate daily checks, troubleshooting, and shift handovers.
 
-**Layout & Controls**
+---
 
-**Element**
+# **Tool Link**
+https://bhavesh-ses.github.io/SES_EventViewer/
 
-**Description**
+---
 
-**Search Box**
+# **Operational Overview**
 
-Located at the top. Filters both DCG & DCH tables in real-time as you type. Type any text (e.g. OAID, Region, Description snippet) to narrow the visible rows.
+The tool retrieves event metadata from both MK regions and presents it in a clean, side-by-side structure.  
+Users can quickly:
 
-**Export DCG**
+- Filter events by date range  
+- Search across all event fields  
+- Compare DCG and DCH event data  
+- Expand any row to see raw metadata  
+- Generate playback URLs for HLS/DASH  
+- Create and share monitoring links  
+- Export filtered results  
+- Toggle views and control layout based on need  
 
-Downloads the currently displayed DCG table as an Excel file (DCG_Events.xlsx). Only active (visible) rows are included.
+It is designed to streamline pre-checks for daily events, resolve mismatches faster, and assist during live operations.
 
-**Export DCH**
+---
 
-Downloads the currently displayed DCH table as an Excel file (DCH_Events.xlsx). Only active (visible) rows are included.
+# **Key Features (Operational View)**
 
-**DCG Container**
+### **1. Date & Range Filtering**
+Select **Start Date** and **End Date** to display all events within that timeframe.
 
-Shows the DCG events table. Automatically populated on page load (and refreshed by reload). If the fetch fails, an error message appears here.
+### **2. Unified Search**
+A single search box filters DCG and DCH tables simultaneously, helping identify events quickly based on:
+- oaId  
+- Description  
+- Event type  
+- HE information  
+- Audio/Dolby details  
+- Suppression mode  
+- Any visible field  
 
-**DCH Container**
+### **3. Show/Hide DCH**
+Use the Show DCH checkbox to toggle the secondary region.  
+When hidden → DCG automatically expands to full width.  
+When enabled → UI splits into two resizable panes.
 
-Shows the DCH events table. Automatically populated on page load (and refreshed by reload). If the fetch fails, an error message appears here.
+### **4. Resizable Split View**
+Drag the center divider to adjust the screen space between DCG and DCH depending on operational focus.
 
-**Step-by-Step Usage**
+### **5. Raw JSON Viewer**
+Every row includes a **RAW JSON** button that opens a formatted metadata popup, useful during RCA, escalations, and backend validation.
 
-1.  **Open the Tool** Simply open index.html in any modern browser. The page immediately begins fetching DCG and DCH data.
-2.  **Wait for Data to Load**
+### **6. Detailed View Mode**
+When enabled, clicking on a row opens a full detail popup showing the formatted metadata in a clean and readable view.
 
-- **“Loading…”** placeholders appear until each region’s data arrives.
-- On success, a table appears showing each event’s key fields (OAID, start/end times, type, regions, description, captions, etc.).
-- On failure, you’ll see an error message in place of the table.
+### **7. Playback URL Generator (HLS/DASH + Token)**
+Select any event → build all required playback URLs (HLS, DASH, Tokenized variants).  
+Helps teams validate suppressed events or playback behavior instantly.
 
-1.  **Search**
+### **8. Share Monitoring URL**
+Creates a compact shareable link containing all selected playback details.  
+Useful for:
+- Escalations  
+- Cross-team communication  
+- Shift changeovers  
+- Quick remote checks  
 
-- Click into the **Search Box** and start typing.
-- The tables update live, hiding any row that does not contain your term in any column.
-- Clear the box to restore all rows.
+### **9. Export Data**
+Exports filtered results for documentation, shift notes, or incident reviews.
 
-1.  **Export to Excel**
+### **10. Theme Toggle**
+Switch between **Light** and **Dark** mode for better readability based on environment or personal preference.
 
-- After filtering or searching, click **Export DCG** or **Export DCH** to download the visible rows for that region.
-- The downloaded .xlsx file preserves column headers and current row order.
+### **11. Live UTC Clock**
+Helps operators correlate event metadata timing with global schedules.
 
-**Button & Control Details**
+---
 
-- **Search Box**
-- **What it does:** Filters both tables simultaneously.
-- **Options/Interactions:** Type any substring (case-insensitive). Wildcards not supported—just plain text.
-- **Limitations:** Very large datasets (thousands of rows) may slow the browser.
-- **Export DCG / Export DCH**
-- **What it does:** Converts the active table into an Excel worksheet.
-- **Options/Interactions:** One click per region. Cannot export both at once.
-- **Limitations:** Exports only rows currently visible—hidden rows due to search are excluded.
-- **Automatic Data Fetch on Load**
-- **What it does:** On page open (or reload), the tool issues GET requests to both endpoints.
-- **Options/Interactions:** No manual “Refresh” button—simply reload the page to fetch fresh data.
-- **Limitations:** Requires network access to the API endpoints; errors (network/CORS) will be shown inline.
+# **User Interface Layout**
 
-**Working Logic (High-Level)**
+### **Top Layer Controls**
+- **Left:** Tool Name  
+- **Center:** Search  
+- **Mid-Right:**  
+  - Share Monitoring URL  
+  - Compare OAID  
+  - Theme Toggle  
+- **Right:** Live UTC Clock  
 
-- **Data Retrieval:** Issue parallel fetches to DCG and DCH event endpoints.
-- **Data Transformation:** Extract and normalize nested fields (e.g., OAID, times, descriptions, sources).
-- **Rendering:** Dynamically build HTML tables with consistent column order.
-- **Searching:** Debounced, client-side filter that hides non-matching rows.
-- **Exporting:** Utilize SheetJS to generate and download .xlsx files from JavaScript arrays.
+### **Second Layer Controls**
+- Show DCH toggle  
+- HLS / DASH / HLS Token / DASH Token selectors  
+- Detailed View toggle  
+- Refresh  
+- Export  
 
-**Known Limitations & Best Practices**
+Below all controls, region labels appear:
+- **DCG Summary:** (Event Count, Token, etc.)  
+- **DCH Summary:** shown only when enabled  
 
-- **Data Volume:** Very large result sets (5,000+ rows) may degrade performance. Consider pre-filtering at the API level if possible.
-- **Description Truncation:** Long descriptions are trimmed to 150 characters for readability. Full text is visible on hover (via cell tooltip).
-- **No Persistent Filters:** Search and filtering are session-only. Reload or navigate away resets state.
-- **Unsupported Browsers:** Requires a modern browser (Chrome, Firefox, Edge).
+---
+
+# **Operational Use Cases**
+
+### **Pre-Event Checks**
+Quickly verify:
+- Event availability  
+- HE parameters  
+- Audio/Dolby setup  
+- Suppression modes  
+- Daily event lineup  
+
+### **Live Operations**
+- Validate discrepancies between DCG & DCH  
+- Inspect raw JSON for issue diagnosis  
+- Generate playback URLs instantly during incidents  
+
+### **Shift Handover**
+- Filter events of the day  
+- Export key details  
+- Share playable monitoring URLs with next shift  
+
+### **Post-Incident / RCA**
+- Compare region metadata  
+- Retrieve raw records  
+- Validate suppression/watermarking/CC attributes  
+
+---
+
+# **Summary**
+
+The **MK EAE – DCG & DCH Event Explorer** provides operational teams with:
+
+- Fast access to event metadata  
+- Accurate DCG/DCH comparison  
+- Rapid playback validation  
+- Clean, readable data views  
+- Efficient troubleshooting features  
+- Quick sharing options for collaboration  
+- A structured UI optimized for day-to-day workflows  
+
+It significantly reduces the time required to analyze, compare, and operationalize MK EAE metadata.
+
+---
+
+If you need further refinement or want a shorter/longer version for internal circulation, just let me know!
