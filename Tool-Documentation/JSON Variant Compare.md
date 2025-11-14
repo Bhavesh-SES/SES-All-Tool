@@ -1,100 +1,121 @@
-JSON Variant Compare Tool — User Guide
+# JSON Variant Compare Tool — User Guide
 
-**Overview:** The JSON Variant Compare Tool enables fast, side-by-side comparison of JSON variant configurations (e.g., “dazn-latin” vs. “global”) across multiple environments. Paste one JSON per line or upload a CSV, and instantly see matching fields highlighted in green, mismatches in red. With live search, full-tree expand/collapse, and Excel export, spotting and reconciling differences has never been easier.
+🔗 **Live Tool:** https://bhavesh-ses.github.io/JSON-Variant-Compare-Tool/
 
-Link: [https://bhavesh-ses.github.io/JSON-Variant-Compare-Tool/](https://bhavesh-ses.github.io/JSON-Variant-Compare-Tool/)
+---
 
-**1\. Theme Toggle**
+## Overview
 
-**Button**: Toggle Theme
+The **JSON Variant Compare Tool** enables fast, side-by-side comparison of JSON variant configurations (for example, “dazn-latin” vs. “global”) across multiple environments. Paste one JSON per line or upload a CSV, and the tool instantly highlights:
 
-- **Action**: Switches between light and dark color schemes.
-- **When to use**: Improves readability in different ambient lighting.
-- **No restrictions**.
+- 🟩 **Matching fields** — shown in green  
+- 🟥 **Mismatches** — shown in red
 
-**2\. Mode Selector**
+With **live search**, **full-tree expand/collapse**, and **Excel export**, spotting and reconciling configuration differences becomes quick and effortless.
 
-**Dropdown**: Paste JSON / Upload CSV
+---
 
-- **Paste JSON**
+## 1. Theme Toggle
+
+**Button:** `Toggle Theme`
+
+- Switches between **light** and **dark** modes  
+- Helpful for long sessions or different lighting conditions  
+- No limitations
+
+---
+
+## 2. Mode Selector
+
+**Dropdown Options:** `Paste JSON` / `Upload CSV`
+
+### Paste JSON Mode
 - Displays two panels:
+  1. **Paste Nested JSON** — Paste **one JSON object per line**. Each line must be valid JSON.
+  2. **Sorted Output** — Shows sorted values extracted from each JSON in real time and provides a **Copy** button.
+- **Limitation:** Best for small–medium datasets (a few dozen lines). Very large inputs may slow the browser.
 
-1.  **Paste Nested JSON**: paste one JSON object per line.
-2.  **Sorted Output**: shows, in real time, the sorted list of values from each JSON.
+### Upload CSV Mode
+- Shows a **file picker** and the **full comparison table**.
+- **CSV Requirements:** Header row **must be exactly**:
 
-- **Limitation**: Best for small sets (up to a few dozen lines) — very large inputs may slow the browser.
-- **Upload CSV**
-- Shows file picker and full comparison table.
-- **CSV Requirements**:
+OverRideID,DCA,DCB,DCC,DCD
+Each `DCA`–`DCD` cell must contain a valid JSON string.
+- **Limitation:** Extremely large CSVs (>5,000 rows) may take several seconds to parse.
 
-1.  Header row with exactly: OverRideID,DCA,DCB,DCC,DCD
-2.  Each DCA–DCD cell contains a valid JSON string.
+---
 
-- **Limitation**: Extremely large CSVs (>5,000 rows) can take several seconds to parse.
+## 3. Paste Mode Controls
 
-**3\. Paste Mode Controls**
+- **JSON Input Box**  
+Placeholder: _“Paste your JSON rows here (one per line)…”_  
+Each line must be a valid JSON object.
 
-- **JSON Input Box**
-- **Placeholder**: _“Paste your JSON rows here (one per line)…”_
-- **Valid JSON**: Each line must parse as a JSON object.
-- **Load Pasted JSON**
-- Converts each pasted JSON line into a row in the comparison table.
-- Assigns each row an OverRideID like “Row 1”, “Row 2”, etc.
-- **Sorted Output Copy**
-- Copies just the comma-separated sorted values (one line per JSON) to the clipboard.
-- **Use case**: Quickly reuse the sorted lists elsewhere.
+- **Load Pasted JSON**  
+Converts each pasted line into a comparison row and auto-generates `OverRideID` values like **Row 1**, **Row 2**, etc.
 
-**4\. Upload Mode Controls**
+- **Sorted Output Copy**  
+Copies comma-separated sorted values (one line per JSON) to clipboard for reuse.
 
-1.  **File Picker**
+---
 
-- Select a .csv file from your computer.
+## 4. Upload Mode Controls
 
-1.  **Load CSV**
+1. **File Picker** — Select a `.csv` file.
 
-- Parses and renders the comparison table.
-- **Note**: Must match the required header format.
+2. **Load CSV** — Parses the CSV and renders the comparison table (requires exact headers). Invalid/malformed rows are flagged.
 
-1.  **Download XLSX**
+3. **Download XLSX** — Export the displayed table to `comparison.xlsx`, preserving match/mismatch coloring.
 
-- Exports the displayed table to comparison.xlsx, preserving match/mismatch coloring.
+4. **Search Box**
+   - Filters rows dynamically (live filtering as you type).
+   - Highlights matched text in **yellow**.
+   - Case-insensitive substring matching; clear the box to restore the full table.
 
-1.  **Search Box**
+5. **Expand All (➕) / Collapse All (➖)**
+   - **Expand All:** Fully expands every JSON tree.
+   - **Collapse All:** Minimizes JSON to single-line summary.
+   - Works any time, before or after a search.
 
-- Filters rows by matching text in any column (ID or JSON).
-- **Behavior**:
-- Live filtering as you type.
-- Highlights only the matched substring in yellow.
-- Clearing the box restores all rows and removes highlights.
-- **Restriction**: Case-insensitive but exact substring matching; use quotes or exact terms for precise filtering.
+---
 
-1.  **Expand All** (➕) / **Collapse All** (➖)
+## 5. Table Behavior & Legend
 
-- **Expand All**: Fully opens every JSON “tree” in the table for maximal visibility.
-- **Collapse All**: Closes all JSON trees down to a single line.
-- **Works at any time**, before or after a search.
+- **Columns**
+- **OverRideID** — Unique ID from CSV or auto-generated.
+- **DCA / DCB / DCC / DCD** — Each displays a collapsible nested JSON tree.
 
-**5\. Table Behavior & Legend**
+- **Match Coloring**
+| Color | Meaning |
+|-------|---------|
+| 🟩 Green | Exact match with `DCA` |
+| 🟥 Red   | Mismatch from `DCA` |
+| ⚪ White | Reference column (`DCA`) baseline |
 
-- **Columns**:
-- **OverRideID**: Unique identifier (from CSV or autogenerated).
-- **DCA … DCD**: Each shows a nested JSON object, rendered in collapsible form.
-- **Match Coloring**:
-- **Green**: Cell content exactly matches the DCA column for that row.
-- **Red**: Any mismatch from the DCA column.
-- **Scrolling**: If a JSON is tall, scroll within its panel.
-- **Limitations**:
+- **Scrolling** — Tall JSON trees scroll inside their cell.
+- **Limitations**
 - Very deeply nested JSON (>10 levels) may not fully expand automatically.
-- Invalid JSON cells display an “Invalid JSON” message.
+- Invalid JSON cells display **“Invalid JSON”**.
 
-**6\. Typical Workflow**
+---
 
-1.  **Choose mode**: paste small JSON snippets or upload a full CSV.
-2.  **Provide input**: paste JSON or select CSV file.
-3.  **Load data**: click **Load CSV** or **Load Pasted JSON**.
-4.  **Explore**:
+## 6. Typical Workflow
 
-- **Search** for specific IDs or JSON keys/values.
-- **Expand/Collapse** the JSON trees as needed.
+1. **Choose mode** — Paste JSON (small snippets) or Upload CSV (bulk).
+2. **Provide input** — Paste objects (one per line) or select a CSV file.
+3. **Load data** — Click **Load Pasted JSON** or **Load CSV**.
+4. **Explore**
+ - Use **Search** to find keys/values or IDs.
+ - **Expand/Collapse** JSON trees.
+ - Inspect green/red differences.
+5. **Export** — Click **Download XLSX** to save the comparison with color indicators.
 
-1.  **Finalize**: click **Download XLSX** to save your comparison with color indicators.
+---
+
+## Tips & Notes
+
+- Use **Paste JSON** for quick checks; **Upload CSV** for bulk comparisons.
+- Split very large CSVs (5k+ rows) to improve performance.
+- Search is **case-insensitive** and highlights exact substring matches.
+- Hover inside cells to scroll long lists.
+- Theme toggle helps readability during long sessions.
