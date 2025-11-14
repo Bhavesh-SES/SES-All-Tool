@@ -145,7 +145,3 @@ The **MK EAE – DCG & DCH Event Explorer** provides operational teams with:
 - A structured UI optimized for day-to-day workflows  
 
 It significantly reduces the time required to analyze, compare, and operationalize MK EAE metadata.
-
----
-
-If you need further refinement or want a shorter/longer version for internal circulation, just let me know!
