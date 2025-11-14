@@ -1,95 +1,91 @@
-JSON-Policy-Compare Tool — User Guide
+# JSON-Policy-Compare Tool
 
-**Overview:** The JSON-Policy-Compare Tool lets you quickly compare and validate JSON-encoded policy or variant configurations across multiple data sources (e.g., DCA, DCB, DCC, DCD). Whether you paste individual JSON lines or upload a CSV, the tool highlights exact matches in green, discrepancies in red, and supports live search, full-tree expand/collapse, and Excel export—making it effortless to spot and reconcile differences.
+The **JSON-Policy-Compare Tool** helps you compare and validate JSON-encoded policy or variant configurations across multiple sources (DCA, DCB, DCC, DCD).  
+It highlights exact matches in **green**, mismatches in **red**, supports live search, bulk CSV processing, expand/collapse, and Excel export—making it ideal for debugging and reconciliation workflows.
 
-Link: [https://bhavesh-ses.github.io/JSON-Policy-Compare-Tool/](https://bhavesh-ses.github.io/JSON-Policy-Compare-Tool/)
+ **Live Tool:**  https://bhavesh-ses.github.io/JSON-Policy-Compare-Tool/
 
-**1\. Theme Toggle**
+---
 
-**Button:** Toggle Theme
+##  Features
 
-- **What it does:** Switches between light-mode and dark-mode color schemes.
-- **When to use:** If you’re working in low-light (dark) or bright environments (light).
-- **Limitations:** None.
+###  Compare JSON Arrays  
+- Paste nested JSON arrays  
+- Upload CSV files with JSON columns  
+- Auto-extracts and sorts `"S"` values  
+- Highlights matches/mismatches
 
-**2\. Mode Selector**
+###  Live Search  
+- Filters across all columns  
+- Highlights only the matched text  
+- Case-insensitive
 
-**Control:** Paste JSON / Upload CSV
+###  CSV Export  
+- Download processed & color-coded CSV  
+- Preserves sorted outputs
 
-- **Paste JSON**
-- **What it shows:** Two side-by-side boxes.
+###  Expand/Collapse View  
+- View long arrays fully  
+- Collapse them for compact view
 
-1.  **“Paste Nested JSON”** — Paste (or type) one JSON array per line.
-2.  **“Sorted Output”** — Immediately shows each line’s sorted values.
+###  Theme Toggle  
+- Switch between Light/Dark mode instantly
 
-- **Use case:** Quickly test or transform a handful of JSON arrays.
-- **Upload CSV**
-- **What it shows:** CSV uploader and a data table.
-- **Use case:** Compare large data sets in bulk.
+---
 
-**3\. Paste Mode Controls**
+##  Modes
 
-- **JSON Input Box**
-- **Placeholder:** “One JSON array per line”
-- **Tip:** Ensure each line is valid JSON (an array of {"S":"…"} objects).
-- **Sorted Output**
-- **Auto-update:** As soon as you type or paste.
-- **Copy Button:** Copies the plain sorted values (one line per JSON).
+### **1. Paste JSON Mode**
+- Paste one JSON array per line. Example: [{"S": "a"}, {"S": "b"}]
+- The tool will: Parse each line & Extract "S" values
+- Sort them
+- Show results instantly in the “Sorted Output” section
+- Includes a Copy button.
 
-**Restrictions:**
+### **2. Upload CSV Mode**
+- Upload a .csv file with the following exact columns:
+- Copy code
+- OverRideID, DCA, DCB, DCC, DCD
+- Each JSON column must contain an array of objects:
+- Copy code [{"S":"foo"}, {"S":"bar"}]
+- The tool: Parses all rows 
+- Extracts & sorts "S" values
+- Builds a color-coded comparison table
+- Allows Search, Expand/Collapse, and CSV Download
 
-- Malformed JSON → marked with “Invalid JSON”
-- Deeply nested or extremely large arrays may take a moment to sort.
+### **3. Color Coding**
+Color	Meaning
+- 🟩 Green	Matches reference (DCA)
+- 🟥 Red	Values differ
+- ⚪ White	Reference column (baseline)
 
-**4\. Upload Mode Controls**
+Quick Start
 
-1.  **File Picker (“Upload CSV”)**
+- Open the tool
+- Select Paste JSON
+- Paste one JSON array per line
+- See instant sorted output
+- Copy results if needed
 
-- Accepts .csv only.
-- **Expected columns:**
-- **OverRideID** — any identifier (ignored in sorting).
-- **DCA–DCD** — each must contain a JSON array like \[{"S":"foo"},…\].
+Upload CSV
+- Select Upload CSV
+- Upload your file
+- Click Load & Process
+- Review color-coded table
+- Search or Expand/Collapse
+- Click Download CSV to export
 
-1.  **Load & Process**
+### 4. Requirements 
+- CSV Format Must contain: OverRideID,DCA,DCB,DCC,DCD
+- Each JSON column must be an array of objects with "S" keys.
 
-- Parses CSV, extracts “S” values from each JSON column, sorts them, and displays a table.
+### 5. JSON Format 
+- Each line must be: [{"S":"value1"},{"S":"value2"}]
+- Invalid JSON lines are marked clearly.
 
-1.  **Download CSV**
-
-- Exports the processed table (including sorted values and match/mismatch color coding) as output.csv.
-
-1.  **Search Box**
-
-- Filters rows live by matching **any column** (ID or sorted values).
-- **Exact-word highlight**: only the matched substring is highlighted.
-- **Clearing** the box restores the full table and removes highlights.
-
-1.  **Expand/Collapse All (➕ / ➖)**
-
-- Expand (**➕**) shows full sorted lists in each cell (no clipping).
-- Collapse (**➖**) truncates or hides overflow for a compact view.
-
-**Restrictions & Tips:**
-
-- CSV must have a header row exactly matching:
-
-OverRideID,DCA,DCB,DCC,DCD
-
-- Each JSON cell must parse to an array of objects with key "S".
-- Large CSVs (thousands of rows) may load slowly—consider breaking them into smaller chunks.
-- Search is case-insensitive but exact: partial matches will still highlight only the matched substring.
-
-**5\. Table Output**
-
-- **Green cells** (match): values exactly match the first column (DCA).
-- **Red cells** (mismatch): any deviation from DCA.
-- **Hover tip:** you can scroll within any cell if the sorted list overflows.
-
-**Quick–Start Workflow**
-
-1.  **Choose your mode** (Paste vs Upload).
-2.  **Provide your input**: paste JSON lines or select a CSV.
-3.  **Click “Load & Process”** (upload mode) or watch the output update live (paste mode).
-4.  **Search** if you need to filter down to specific IDs or values.
-5.  **Use Expand/Collapse** to adjust table density.
-6.  **Download** your final CSV for archiving or further analysis.
+Tips & Notes
+- Very large CSVs (5k+ rows) may take longer to load — split them if needed.
+- Search is case-insensitive and highlights exact substring matches.
+- Hover inside cells to scroll long lists.
+- Use Expand/Collapse for large comparisons.
+- Theme toggle is helpful for long working sessions.
